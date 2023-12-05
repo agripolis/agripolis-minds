@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -84,7 +84,8 @@ RegMarketInfo::createMarket(RegEnvInfo* Env) {
         price_vector.push_back(p);
         price_expectation_vector.push_back(p);
         bool leg= marketdata.products[i].premium;
-
+        double y = marketdata.products[i].yield;
+        product_cat[counter].setYield(y);
         
         if (leg) {
             product_cat[counter].setPremiumLegitimation(true);
@@ -416,6 +417,7 @@ RegMarketInfo::priceFunction(RegSectorResultsInfo& Sector,Evaluator* evaluator, 
             product_cat[i].setPriceExpectation(price_expectation_vector[i]);
         }
     }
+    g->setEqInterest(product_cat[1].getPrice());
 	return;
 }
 

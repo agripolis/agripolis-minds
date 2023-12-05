@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -24,13 +24,31 @@
 #include <random>
 #include <variant>
 
+using namespace std;
+
 enum class SimPhase { INIT, LAND, INVEST, PRODUCT, FUTURE, BETWEEN,ALL };
 enum class DISTRIB_TYPE {UNIFORM, NORMAL};
+struct SurrogatePara {
+    string model_dir = "D:\\mindstep-tf\\modelagripolis\\nn-model";
+    int dim_in = 358;
+    int dim_out = 253;
+    string input_name = "serving_default_dense_1_input:0";
+    string output_name = "StatefulPartitionedCall:0";
+};
 
 //static int rndcounter=0;
-using namespace std;
+
 class RegGlobalsInfo {
 public:
+    double Liquidity_Low = -29985;
+    double Liquidity_High = 2999967;
+    int tCnt = 0;
+    bool hasMIP;
+    bool Use_Surrogate_Model;
+    int Use_Surrogate_Percent;
+    SurrogatePara SurrogateParas;
+    vector<string> Surrogate_Extra_outnames;
+    
 	//emsland
 	bool RestrictInvestments;
 	double Livestock_Inv_farmsPercent;
@@ -92,11 +110,11 @@ public:
 	vector<double> MaxRents;
 	bool SDEBUG1, SDEBUG2;
 
-	static const size_t RCOUNT = 12; //# of extra random number generators
+	static const size_t RCOUNT = 13; //# of extra random number generators
 	string rand_gen_names[RCOUNT] = { "mgmtCoeff","farmAge","closeFarm", "investAge",
 		"contractLengthInit","contractLength",
 		"freePlot_rentPlot", "freePlot_initLand",
-		"demogFF", "demogCF", "demogNewage", "livestock_inv"};// , "randPlotType_preparePeriod"
+		"demogFF", "demogCF", "demogNewage", "livestock_inv", "surrogate"};// , "randPlotType_preparePeriod"
 
 
 	enum R_ENGINES { MINSTD_RAND0, MINSTD_RAND, MT19937, MT19937_64, KNUTH_B };
@@ -111,6 +129,7 @@ public:
 	int getRandomInt(string, std::uniform_int_distribution<>&);
 	double getRandomReal(string, std::uniform_real_distribution<>&);
 
+    std::uniform_int_distribution<> uni_int_distrib_surrogate;
 	std::uniform_real_distribution<> uni_real_distrib_mgmtCoeff;
 	std::uniform_int_distribution<> uni_int_distrib_farmAge;
 	std::uniform_real_distribution<> uni_real_distrib_closeFarm;

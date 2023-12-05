@@ -1,0 +1,12 @@
+FarmName  ROOT-2		
+		
+!              Investition	Anzahl	Kapazitaet
+		
+plough	1	2000
+tractor	1	10000
+tractorSmall	1	10000
+chiselPlough	1	2600
+sowMachine	1	2250
+seedBedCombi	1	2250
+singleSeeder	1	750
+fertSpreaderSmall	1	2000

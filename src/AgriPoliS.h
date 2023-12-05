@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -13,7 +13,7 @@
 // Reading options from options.txt
 #include <fstream>
 #include <algorithm>
-#include <stdio.h>
+#include <sstream>
 #include <iterator>
 #include <vector>
 #include <string>
@@ -252,6 +252,8 @@ DISTRIB_TYPE make_distribType(string str) {
 void setoptions(){
 gg->RUNS=atoi(optionsdata["RUNS"].c_str());
 gg->TEILER = atoi(optionsdata["TEILER"].c_str());
+
+gg->Use_Surrogate_Model = optionsdata["USE_SURROGATE_MODEL"].compare("true") == 0 ? true : false;
 
 gg->RestrictInvestments=optionsdata["RESTRICTINVESTMENTS"].compare("true") == 0 ? true : false;
 

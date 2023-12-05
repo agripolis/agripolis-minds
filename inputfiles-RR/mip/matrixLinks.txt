@@ -1,0 +1,38 @@
+# generated from ===> Altmark_input.xlsm <===					
+					
+					
+#Matrix links					
+					
+					
+#Links -------					
+					
+#============	===============				
+#	MatrixRow	MatrixCol	 linkType   	value	   factor
+#============	===============				
+	liquidity/financing_rule	WinterWheatPrice	  market 	C	0.4
+	liquidity/financing_rule	WinterRyePrice	  market 	C	0.4
+	liquidity/financing_rule	SummerCerePrice	  market 	C	0.4
+	liquidity/financing_rule	WinterRapePrice	  market 	C	0.4
+	liquidity/financing_rule	SummerPeasPrice	  market 	C	0.4
+	liquidity/financing_rule	SugarBeetPrice	  market 	C	0.4
+	liquidity/financing_rule	WinterBarleyPrice	  market 	C	0.4
+	liquidity/financing_rule	SummerTriticalePrice	  market 	C	0.4
+	liquidity/financing_rule	MaizCornPrice	  market 	C	0.4
+	liquidity/financing_rule	SummerBeansPrice	  market 	C	0.4
+	liquidity/financing_rule	PotatoesPrice	  market 	C	0.4
+#	liquidity/financing_rule	CerealStrawPrice	  market 	C	0.4
+	liquidity/financing_rule	SET_ASIDE	  market 	C	1
+	liquidity/financing_rule	DAIRY_COW	  market 	C	1
+	liquidity/financing_rule	LEASE_QUOTA	  market 	C	0
+	liquidity/financing_rule	LET_QUOTA	  market 	C	0
+	liquidity/financing_rule	COUPLED_PREM_UNMOD	  market 	C	0
+	liquidity/financing_rule	DECOUPLED_PREM_UNMOD	  market 	C	0
+	liquidity/financing_rule	TOTAL_PREM_MODULATED	  market 	C	0
+	liquidity/financing_rule	IDLE_ARABLE	  market 	C	0.4
+	liquidity/financing_rule	IDLE_GRASS	  market 	C	0.3
+	liquidity/financing_rule	EXCESS_LU	  market 	C	0
+	dist_prem	TRANCH_1	reference	tranch1deg	
+	dist_prem	TRANCH_2	reference	tranch2deg	
+	dist_prem	TRANCH_3	reference	tranch3deg	
+	dist_prem	TRANCH_4	reference	tranch4deg	
+	dist_prem	TRANCH_5	reference	tranch5deg	

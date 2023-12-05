@@ -4,4 +4,8 @@
     <LocalDebuggerCommandArguments>d:\agripolis2020\regions\Altmark_neu\inputfiles --RUNS=3 policy_settings.txt  --TEILER=30</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>d:\mindstep-tf\surrogagripolis\inputfiles-RR --RUNS=3 </LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

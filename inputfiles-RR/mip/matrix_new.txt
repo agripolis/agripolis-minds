@@ -1,0 +1,31 @@
+#MIP-Matrix	
+	
+	
+_VARIABLES_	market.name._all_ + LU_UPPER_LIMIT +investments.name._all_ +DISINV_SOWS +DISINV_PIGS +DISINV_BEEF +DISINV_SUCKLER +DISINV_DAIRY +DISINV_VEALER
+	
+	
+_INTEGERS_	bunkerSilo450=>bunkerSilo26550
+	
+liquidity	(-1 )* ST_BORROW_CAP +1*EC_INTEREST + matrixLinks.liquidity+ _defaultLinks_.liquidity      
+financing_rule	matrixLinks.financing_rule+ _defaultLinks_.financing_rule      
+labour	market.labour._all_ +(-1)* investments.labSub._all_ +(0)*DISINV_SOWS +(0)*DISINV_PIGS +(0)*DISINV_BEEF +(0)*DISINV_SUCKLER +(0)*DISINV_DAIRY +(0)*DISINV_VEALER  
+Arable_Land	WinterWheat_Price_conv_bla+WinterBarley_Price_conv_bla+SummerCere_Price_conv_bla+WinterRape_Price_conv_bla+Sugarbeet_Price_conv_bla+SummerPeas_Price_conv_bla+Summerbeans_Price_conv_bla+MaizCorn_Price_conv_bla+Potatoes_Price_conv_bla+SET_ASIDE+IDLE_ARABLE  
+Grazing_Land	IDLE_GRASS
+milk_quota	8500*DAIRY_COW +(-1)*LEASE_QUOTA +LET_QUOTA
+LU	0*LU_UPPER_LIMIT
+LU_upper_limit	LU_UPPER_LIMIT
+coupled_premium	(-300)*WinterWheat_Price_conv_bla+(-300)*WinterBarley_Price_conv_bla+(-300)*SummerCere_Price_conv_bla+(-300)*WinterRape_Price_conv_bla+(-300)*Sugarbeet_Price_conv_bla+(-300)*SummerPeas_Price_conv_bla+(-300)*Summerbeans_Price_conv_bla+(-300)*MaizCorn_Price_conv_bla+(-300)*Potatoes_Price_conv_bla+(-300)*SET_ASIDE+(-300)*IDLE_ARABLE+(-300)*IDLE_GRASS  
+decoupled_premium	DECOUPLED_PREM_UNMOD
+sum_prem	(-1)*COUPLED_PREM_UNMOD +(-1)*DECOUPLED_PREM_UNMOD +TRANCH_1 +TRANCH_2 +TRANCH_3 +TRANCH_4 +TRANCH_5
+dist_prem	TOTAL_PREM_MODULATED +matrixLinks.dist_prem        
+modulated_prem	0*LU_UPPER_LIMIT
+max_tranch1	TRANCH_1         
+max_tranch2	TRANCH_2         
+max_tranch3	TRANCH_3         
+max_tranch4	TRANCH_4         
+max_tranch5	TRANCH_5         
+tranch1	0*LU_UPPER_LIMIT
+tranch2	0*LU_UPPER_LIMIT
+tranch3	0*LU_UPPER_LIMIT
+tranch4	0*LU_UPPER_LIMIT
+tranch5	0*LU_UPPER_LIMIT

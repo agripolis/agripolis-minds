@@ -1,4 +1,6 @@
-# AgriPoliS2020
+# AgriPoliS-MINDS
+
+The version for the MIND STEP project (https://mind-step.eu/), work package 4.5.
 
 ## AgriPoliS -- An Agricultural Policy Simulator -- 
 

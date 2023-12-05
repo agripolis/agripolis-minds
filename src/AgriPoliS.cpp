@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -13,15 +13,18 @@
 //---------------------------------------------------------------------------
 #include <chrono>
 #include <ctime>
+
 #include "RegManager.h"
 #include "Agripolis.h"
+
 //---------------------------------------------------------------------------
 
 int main (int argc, char * argv[]) {
+	
 	auto start = std::chrono::system_clock::now();
 	std::time_t time0 = std::chrono::system_clock::to_time_t(start);
 	auto ctime_start =  std::ctime(&time0);
-	cout << ctime_start << "\n";
+	cout << ctime_start << endl;
 
 	    gg= new RegGlobalsInfo();
 		gg->TimeStart = ctime_start;

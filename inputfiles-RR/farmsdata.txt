@@ -1,0 +1,43 @@
+#	generated from ===> Altmark_input.xlsm <===														
+															
+#	Farm Data Collections	161_141_1531	161_141_9990	161_141_9920	161_141_320	161_141_8438	151_141_16217	151_141_5116	162_141_24895	162_141_24760	162_141_4821	166_141_23040	166_141_19589	166_141_15909	166_141_24241
+															
+	NumOfFarms	14													
+	Name	ROOT-1	ROOT-2	ROOT-3	ROOT-4	ROOT-5	CEREALS-1	CEREALS-2	COMBINED-1	COMBINED-2	COMBINED-3	VARIOUS-1	VARIOUS-2	VARIOUS-3	VARIOUS-4
+	Farm_Type	3	3	3	3	3	3	3	3	3	3	3	3	3	3
+	Form_of_Organisation	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+	Weighting_Factor	3	26	18	11	39	123	37	59	13	115	11	40	89	120
+															
+#	Number_of_farms														
+															
+															
+	land_input	304	195	79	72	11	76	29	192	51	20	182	124	86	40
+															
+	Arable_Land														
+	owned_land	288	190	79	72	9	67	29	170	51	20	97	120	77	39
+	rented_land	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+	initial_rental_price	274	274	274	274	274	274	274	274	274	274	274	274	274	274
+															
+	Grazing_Land														
+	owned_land	16	5	0	0	2	9	0	22	0	0	85	4	9	1
+	rented_land	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+	initial_rental_price	146	146	146	146	146	146	146	146	146	146	146	146	146	146
+															
+															
+	milk_quota	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+	fam_labour_units	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5	1.5
+	off_fam_labour	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+	equity_capital	746320	478725	193945	176760	34287	186580	90393	471360	158967	62340	446810	304420	211130	124680
+	land_assets	487616	245412	187668	24060	27268	121904	46516	307968	81804	32080	291928	198896	137944	64160
+	rel_invest_age	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+															
+#	Milchkuehe	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+#	Bodenverm”gen in Euro pro Hektar	1604	1604	1604	1604	1604	1604	1604	1604	1604	1604	1604	1604	1604	1604
+#	Eigenland gesamt	304	195	79	72	11	76	29	192	51	20	182	124	86	40
+#	land_assets	487616	312780	126716	115488	17644	121904	46516	307968	81804	32080	291928	198896	137944	64160
+															
+# Eigenkaptital Faktor mal land input; egal ob Eigentum oder Pacht. 
+# Bei land_asset nur Eigentum; Allerdings erfolgt beim Eigenkapital 
+# eine Unterscheidung von Parttime und Fulltime. Der Faktor ist 
+# Regionsspezifisch und fr Parttime h”her														
+# Faktor Eigenkapital	2455	2455	2455	2455	3117	2455	3117	2455	3117	3117	2455	2455	2455	3117

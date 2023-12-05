@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -67,6 +67,7 @@ public:
     void    increaseLandCapacityOfType(int farm,int type,int no_of_plots);
     void    increaseLandCapacityOfTypel(int farm,int type,int no_of_plots);
     void    init();
+    void    initSurrogateModel();
     void    initRegion();
     void    initInvestmentCatalog();
     void    initMarket();
@@ -74,18 +75,30 @@ public:
     void    initPopulations();
     void    initMatrix();
     void    initMatrix0();
+    void    initSurrogate();
     virtual RegLpInfo*    createMatrix();
 
     virtual RegFarmInfo* createFarm(RegRegionInfo * reg,
                                     RegGlobalsInfo* G,
                                     vector<RegProductInfo >& PCat,
                                     vector<RegInvestObjectInfo >& ICat ,
-                                    RegLpInfo* lporig,
+                                    RegSurrogate* lporig,
                                     short int pop,
                                     int number,
                                     int fc,
                                     string farmname,
                                     int farmerwerbsform);
+    virtual RegFarmInfo* createFarm(RegRegionInfo* reg,
+        RegGlobalsInfo* G,
+        vector<RegProductInfo >& PCat,
+        vector<RegInvestObjectInfo >& ICat,
+        RegLpInfo* lporig,
+        short int pop,
+        int number,
+        int fc,
+        string farmname,
+        int farmerwerbsform);
+
     void    initOutput();
     void    initGlobals(bool read);
     void    initGlobals2();
@@ -123,6 +136,8 @@ public:
 	void updateYoungFarmerLand();
 
 protected:
+    void test_surrogate_model();
+
 	void outputRestrictedInvs(RegFarmInfo*);
 	int nfarms_restrict_invest;
 
@@ -159,6 +174,9 @@ protected:
     RegMarketInfo           *Market;
     /// instance of Lp
     RegLpInfo                *Mip;
+
+    RegSurrogate* MipSurrogate;
+
     /// Policy Settings
     OutputControl* Policyoutput;
     /// Evaluator and Parser
@@ -255,6 +273,10 @@ protected:
         included in the production decision
     */
     double    Production();
+
+    /* Integration of surrogate model*/
+    double ProductionWithInvestDecision();
+
     /** set total land input in region, and determine price changes and
         adjustments.
     */

@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -22,6 +22,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iomanip>
 
 #include "RegManager.h"
 #include "RegLpD.h"
@@ -31,11 +32,17 @@
 
 #include <iterator>
 #include <regex>
-
+#include "cppflow/model.h"
 #include "textinput.h"
 #include "random.h"
+#include "RegSurrogate.h"
+#include "surrogate.h"
+
 
 using namespace std;
+shared_ptr<cppflow::model> surrogate_model;
+struct surrogateIO surrogateIO;
+
 map<int,int> manageCoeffMap;
 
 long int mtRandMin = 0 ;
@@ -200,6 +207,9 @@ void RegManagerInfo::init() {
 	readfiles(g->INPUTFILEdir.c_str(), g->HAS_SOILSERVICE);
 	randInit(g->SEED);
  
+    if (g->Use_Surrogate_Model)
+        initSurrogateModel();
+    //test_surrogate_model();
 	// create market and pass globals
     Market = new RegMarketInfo(g);
 
@@ -229,11 +239,18 @@ void RegManagerInfo::init() {
 
     // investmen objects create themselves and are stored in InvestCatalog vector
     initInvestmentCatalog();
-    initMatrix0();
-    initMatrix();
+    if (g->Use_Surrogate_Model) {
+        initSurrogate();
+    }
+    if (g->hasMIP) {
+        initMatrix0();
+        initMatrix();
+        setPremiumColRow();
+    }
+    else
+        g->Use_Surrogate_Percent = 100;
 
-    setPremiumColRow();
-	
+    
 	initPopulations(); 
 	//outputManageCoeffDistrib();
     initOutput();
@@ -244,7 +261,8 @@ void RegManagerInfo::init() {
 	//Modulation data also for the very first iteration
 	//setModulationData();
 
-    setLpChangesFromPoliySettingsNaming();
+    if (!g->Use_Surrogate_Model)
+       setLpChangesFromPoliySettingsNaming();
 
 	Region->calcMaxRents();
 
@@ -333,6 +351,7 @@ RegManagerInfo::initGlobals2() {
 	g->FIXED_HIRED_LAB =  invId[investdata.FixHiredLabName];//g->sFIXED_HIRED_LAB];
 
 	g->uni_int_distrib_farmAge.param(std::uniform_int_distribution<>::param_type{ 0,g->GENERATION_CHANGE });
+    g->uni_int_distrib_surrogate.param(std::uniform_int_distribution<>::param_type{ 0,99 });
 }
 
 void
@@ -752,6 +771,16 @@ void RegManagerInfo::initMatrix0(){
 	}
 }
 
+void RegManagerInfo::initSurrogateModel() {
+    surrogate_model= shared_ptr<cppflow::model>(new cppflow::model(g->SurrogateParas.model_dir));
+}
+
+
+void RegManagerInfo::initSurrogate() {
+    MipSurrogate = new RegSurrogate();
+    MipSurrogate->setupSurrogate(g);
+}
+
 void
 RegManagerInfo::initMatrix() {
     Mip=createMatrix();
@@ -900,6 +929,9 @@ RegManagerInfo::initPopulations() {
     string farmname;
 
 	double sum_milk_quota = 0;
+    bool use_surrogate=false;
+    int r;
+    
 
     for (int i = 0;i < g->number_of_farmtypes; i++) {
         farmclass = g->farm_class[i];
@@ -910,7 +942,29 @@ RegManagerInfo::initPopulations() {
 
 			g->tFarmId = new_farm_id;
 
+            use_surrogate = false;
+            if (g->Use_Surrogate_Model) {
+                if (g->Use_Surrogate_Percent == 0 && new_farm_id == 0)
+                    use_surrogate = true;
+                else {
+                    r = g->getRandomInt("SURROGATE", g->uni_int_distrib_surrogate);
+                    if (r < g->Use_Surrogate_Percent)
+                        use_surrogate = true;
+                }
+            } 
             // create farm and initialise
+        if (g->Use_Surrogate_Model && use_surrogate)    
+            newFarm = createFarm(Region,
+                                 g,
+                                 Market->getProductCat(),
+                                 InvestCatalog, // list pass by reference
+                                 MipSurrogate,
+                                 i,
+                                 new_farm_id,
+                                 farmclass,
+                                 farmname,
+                                 farmef);
+         else 
             newFarm = createFarm(Region,
                                  g,
                                  Market->getProductCat(),
@@ -921,9 +975,10 @@ RegManagerInfo::initPopulations() {
                                  farmclass,
                                  farmname,
                                  farmef);
+                                     
             // set values read from file
 
-                newFarm->setInitialLand(initial_land_input[i]);
+            newFarm->setInitialLand(initial_land_input[i]);
             for (int k=0;k<g->NO_OF_SOIL_TYPES;k++) {
                 newFarm->setInitialOwnedLandOfType(owned_land_input[k][i],k);
                 newFarm->setInitialRentedLandOfType(rented_land_input[k][i],k);
@@ -1030,6 +1085,30 @@ void RegManagerInfo::outputFarmAgeDists() {
 	}
 }
 
+void RegManagerInfo::test_surrogate_model() {
+    vector<float> inp;
+    for (int i = 0;i < g->SurrogateParas.dim_in; ++i) {
+        inp.push_back(2.0);
+    }
+
+    vector<float> outp;
+    outp.resize(g->SurrogateParas.dim_out);
+
+    predict(inp, outp,g->SurrogateParas.input_name, g->SurrogateParas.output_name);
+    std::cout << outp.size() << std::endl;
+
+    std::cout << setprecision(8);
+    std::cout << std::defaultfloat << std::endl;
+    std::cout << std::setw(30);
+    int cnt = 0;
+    for (int i = 0;i < g->SurrogateParas.dim_out;++i) {
+        std::cout << std::setw(20) << outp[i];
+        //++cnt;
+        //if (cnt % 6 == 0) std::cout << std::endl;
+        //else std::cout << "\t";
+    }
+}
+
 //---------------------------------------------------------------------------
 //         SIMULATION
 //---------------------------------------------------------------------------
@@ -1071,7 +1150,7 @@ void RegManagerInfo::step() {
         tmp2->step();
     }
     PreparationForPeriod();
-
+    //cout << "prepared" << endl;
     // adjust costs by management coefficient
     if (iteration == 0)
         CostAdjustment();
@@ -1082,8 +1161,7 @@ void RegManagerInfo::step() {
     g->WERTS1=RentStatistics();
     g->WERTS=-g->WERTS1;
     LandAllocation();
-	if (g->YoungFarmer)
-		updateYoungFarmerLand();
+    //cout << "landallocationed" << endl;
 	if (g->NASG && iteration >= g->NASG_startPeriod - 1) 
 		updateNASG();
 	//Region->outputMaxRents();
@@ -1095,8 +1173,14 @@ void RegManagerInfo::step() {
     f=static_cast<int>(Region->getExpAvNewRentOfType(1)/Region->getAvRentOfType(1));
     g->WERTS2=RentStatistics();
     g->WERTS+=g->WERTS2;
-    InvestmentDecision();
-    Production();
+    
+    if (g->Use_Surrogate_Model)
+        ProductionWithInvestDecision();
+    else {
+        InvestmentDecision();
+        Production();
+    }
+    
 	UpdateSoilserviceP();  
     UpdateMarket();
     FarmPeriodResults();
@@ -1107,12 +1191,14 @@ void RegManagerInfo::step() {
     setPolicyChanges();
     Disinvest();
 	FutureOfFarms();
+    //cout << "fof-ed" << endl;
 	SectorResultsAfterDisinvest();
     ResetPeriodLabour();
     SectorOutput();
     EnvSpeciesCalc();
 	RemoveFarms();
     ProcessMessages();
+    //cout << "end of iteration" << endl;
 }
 
 void RegManagerInfo::updateYoungFarmerLand() {
@@ -1476,6 +1562,27 @@ double    RegManagerInfo::RentStatistics() {
     } else {
       return 0;
     }
+}
+
+double RegManagerInfo::ProductionWithInvestDecision() {
+    g->tPhase = SimPhase::INVEST;
+    double sum = 0;
+    list<RegFarmInfo* >::iterator farms_iter;
+    for (farms_iter = FarmList.begin();
+        farms_iter != FarmList.end();
+        farms_iter++) {
+#ifndef NDEBUG1
+        g->tFarmName = (*farms_iter)->getFarmName();
+        g->tFarmId = (*farms_iter)->getFarmId();
+#endif
+
+        sum += (*farms_iter)->doLpInvest();
+        if (g->YoungFarmer)
+            (*farms_iter)->saveYoungFarmerPay();
+    }
+    g->tPhase = SimPhase::BETWEEN;
+    
+    return sum;
 }
 
 void
@@ -2150,9 +2257,9 @@ RegManagerInfo::readPolicyChanges() {
 }
 void
 RegManagerInfo::setPolicyChanges() {
-    setPremium();
+    if (!g->Use_Surrogate_Model) setPremium();
     setDecoupling();
-    setLpChangesFromPoliySettingsNaming();
+    if (!g->Use_Surrogate_Model) setLpChangesFromPoliySettingsNaming();
     if (g->PRINT_POLICY) {
         Data->printPolicyOutput("\n");
         Data->closePolicyOutput();
@@ -2617,7 +2724,7 @@ void RegManagerInfo::setLpChangesFromPoliySettingsNaming() {
                 break;
             }
         }
-        //  (*farms_iter)->updateLpValues();
+        // (*farms_iter)->updateLpValues();
     }
 }
 
@@ -2963,6 +3070,19 @@ RegFarmInfo* RegManagerInfo::createFarm(RegRegionInfo * reg,
                                         vector<RegProductInfo >& PCat,
                                         vector<RegInvestObjectInfo >& ICat ,
                                         RegLpInfo* lporig,
+                                        short int pop,
+                                        int number,
+                                        int fc,
+                                        string farmname,
+                                        int farmerwerbsform) {
+    return new RegFarmInfo(reg,G,PCat,ICat ,lporig,pop,number,fc,farmname,farmerwerbsform);
+}
+
+RegFarmInfo* RegManagerInfo::createFarm(RegRegionInfo * reg,
+                                        RegGlobalsInfo* G,
+                                        vector<RegProductInfo >& PCat,
+                                        vector<RegInvestObjectInfo >& ICat ,
+                                        RegSurrogate* lporig,
                                         short int pop,
                                         int number,
                                         int fc,

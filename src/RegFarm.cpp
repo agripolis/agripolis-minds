@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -167,46 +167,46 @@ void RegFarmInfo::decreaseCarbonOfType(int soiltype, int anz){
 //---------------------------------------------------------------------------
 //  RegFarm constructors/destructors
 //---------------------------------------------------------------------------
+RegFarmInfo::RegFarmInfo(RegRegionInfo* reg,
+    RegGlobalsInfo* G,
+    vector<RegProductInfo>& PCat,               // reference to market's product objects
+    vector<RegInvestObjectInfo >& ICat, // InvestCatalog
+    //RegLpInfo* lporig,
+    short int pop,
+    int number,
+    int fc,
+    string farmname,
+    int farmerwerbsform)
+    :region(reg), g(G), invest_cat(&ICat), product_cat(&PCat) {
 
-RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
-                         RegGlobalsInfo* G,
-                         vector<RegProductInfo> &PCat,               // reference to market's product objects
-                         vector<RegInvestObjectInfo >& ICat, // InvestCatalog
-                         RegLpInfo* lporig,
-                         short int pop,
-                         int number,
-                         int fc,
-                         string farmname,
-                         int farmerwerbsform)
-        :region(reg),g(G),invest_cat(&ICat),product_cat(&PCat) {
-	
-	restrict_invest = false;
-	allow_invest = false;
-	reinvestLUcap = 1e+30;
+    use_surrogate = false;
+    restrict_invest = false;
+    allow_invest = false;
+    reinvestLUcap = 1e+30;
 
-	GenChange_demograph = 0;
-	YoungFarmer_years = 0;
-	youngfarmerPay = 0;
-	youngfarmerPaid = false;
-	youngfarmerMinSize = false;
+    GenChange_demograph = 0;
+    YoungFarmer_years = 0;
+    youngfarmerPay = 0;
+    youngfarmerPaid = false;
+    youngfarmerMinSize = false;
 
-//soil service
-	for (int i=0; i<g->NO_OF_SOIL_TYPES; ++i) {
-		avCarbons.push_back(0);
-		varCarbons.push_back(0);
-		deltCarbons.push_back(0);
-		nPlots.push_back(0);
-	}
-	
+    //soil service
+    for (int i = 0; i < g->NO_OF_SOIL_TYPES; ++i) {
+        avCarbons.push_back(0);
+        varCarbons.push_back(0);
+        deltCarbons.push_back(0);
+        nPlots.push_back(0);
+    }
+
     ////////////
     /// GENERAL
     ////////////
-    sunk_costs_labor=0;
-    obj_backup=NULL;
-    flat_copy=false;
+    sunk_costs_labor = 0;
+    obj_backup = NULL;
+    flat_copy = false;
     labour = new RegLabourInfo(g);
-    display_modulation=0;
-    for (int i=0;i<g->NO_OF_SOIL_TYPES;i++) {
+    display_modulation = 0;
+    for (int i = 0;i < g->NO_OF_SOIL_TYPES;i++) {
         land_capacity_estimation_of_type.push_back(0);
         premium_estimation_of_type.push_back(0);
         land_input_of_type.push_back(0);
@@ -225,13 +225,13 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
         wanted_plot_of_type.push_back(RegPlotInformationInfo());
 
     }
-    actual=false;
+    actual = false;
 
-    assets=0;
+    assets = 0;
     land_assets = 0;
-    land_input=0;
-    farm_name=farmname;
-   
+    land_input = 0;
+    farm_name = farmname;
+
     farm_colour = -1;
     invest_get_older = false;
     farm_class = fc;
@@ -243,7 +243,7 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
     full_time = true;
     legal_type = farmerwerbsform;
     switch_erwerbsform = -1;
-    if (farmerwerbsform==1)
+    if (farmerwerbsform == 1)
         full_time = true;
     else
         full_time = false;
@@ -251,15 +251,15 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
     farm_colour = 0;// RGB(R,GR,B);
 
     // lp variables
-    lp_result=0;
-    first_time =true;
+    lp_result = 0;
+    first_time = true;
 
     // capital variables
-    financing_rule =0;
+    financing_rule = 0;
     bonus = 0;
     lt_borrowed_capital_old = 0;
     lt_borrowed_capital = 0;
-    lt_interest_costs_supported =0;
+    lt_interest_costs_supported = 0;
     st_borrowed_capital = 0;
     capital_input = 0;
     closed = 0;
@@ -267,7 +267,7 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
     sc_relevant = 1;
     farm_distance_costs = 0;
     farm_rent_exp = 0;
-    farm_tac=0;
+    farm_tac = 0;
     farm_repayment = 0;
     farm_income = 0;
     opp_own_land = 0;
@@ -289,7 +289,7 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
     add_st_capital = 0;
     revenue = 0;
     assets_at_production_wo_land = 0;
-    premium  = 0;
+    premium = 0;
     average_premium = 0;
     income_payment_farm = 0;
     modulated_income_payment = 0;
@@ -311,74 +311,125 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo *reg,
     /// FARMPRODUCTLIST FARMINVESTLIST
     //////////////////////////////////
     // Generate Random Number between lower_border and upper_border
-    double lower_border=g->LOWER_BORDER;
-    double upper_border=g->UPPER_BORDER;
+    double lower_border = g->LOWER_BORDER;
+    double upper_border = g->UPPER_BORDER;
 
-	if (g->USE_TRIANGULAR_DISTRIBUTED_MANAGEMENT_FACTOR) {
-		management_coefficient = g->triangular("MGMTCOEFF", lower_border, lower_border + (upper_border - lower_border) / 2, upper_border);
-    } else {
-        //management_coefficient = lower_border + (upper_border-lower_border)*((double)randlong()/mtRandMax);//RAND_MAX);
-		double r;
-		string name = "MGMTCOEFF";
-		
-		if (g->ManagerDistribType != DISTRIB_TYPE::NORMAL) {
-			r = g->getRandomReal(name, g->uni_real_distrib_mgmtCoeff);
-			management_coefficient = lower_border + (upper_border - lower_border)*r;
-		}
-		else {
-			r = g->getRandomNormal(name, g->normal_distr);
-			while (r < lower_border || r > upper_border)
-				r = g->getRandomNormal(name, g->normal_distr);
-			management_coefficient = r;
-		}
-		//cout << mean<<"\t"<<stddev<<"\t"<< r << endl;
-		
+    if (lower_border == upper_border) management_coefficient = lower_border;
+    else if (g->USE_TRIANGULAR_DISTRIBUTED_MANAGEMENT_FACTOR) {
+        management_coefficient = g->triangular("MGMTCOEFF", lower_border, lower_border + (upper_border - lower_border) / 2, upper_border);
     }
-    FarmInvestList = new RegInvestList(g,ICat);
-    FarmProductList = new RegProductList(g,PCat);
+    else {
+        //management_coefficient = lower_border + (upper_border-lower_border)*((double)randlong()/mtRandMax);//RAND_MAX);
+        double r;
+        string name = "MGMTCOEFF";
+
+        if (g->ManagerDistribType != DISTRIB_TYPE::NORMAL) {
+            r = g->getRandomReal(name, g->uni_real_distrib_mgmtCoeff);
+            management_coefficient = lower_border + (upper_border - lower_border) * r;
+        }
+        else {
+            r = g->getRandomNormal(name, g->normal_distr);
+            while (r < lower_border || r > upper_border)
+                r = g->getRandomNormal(name, g->normal_distr);
+            management_coefficient = r;
+        }
+        //cout << mean<<"\t"<<stddev<<"\t"<< r << endl;
+
+    }
+
+    FarmInvestList = new RegInvestList(g, ICat);
+    FarmProductList = new RegProductList(g, PCat);
 
     /////////////////////
     // GET READY FOR LP
     /////////////////////
-    lp = lporig->clone(g);
-    lp->initLinks(this,
-                  FarmInvestList,
-                  FarmProductList,
-                  labour,
-                  &liquidity,
-                  &land_input,
-                  &milk_quota,
-                  &financing_rule,
-                  &modulated_income_payment,
-                  &income_payment_farm,
-                  &(g->TRANCH_1_WIDTH),
-                  &(g->TRANCH_2_WIDTH),
-                  &(g->TRANCH_3_WIDTH),
-                  &(g->TRANCH_4_WIDTH),
-                  &(g->TRANCH_5_WIDTH),
-                  &(g->TRANCH_1_DEG),
-                  &(g->TRANCH_2_DEG),
-                  &(g->TRANCH_3_DEG),
-                  &(g->TRANCH_4_DEG),
-                  &(g->TRANCH_5_DEG)
-);
+    //initLinks(lporig);
 
-	/////////////
+    /////////////
     // PRODUCTION
     /////////////
 
     inum_vector.resize((*invest_cat).size());
 
     PlotList.clear();
-  /*  // place farm plot in list
-    region->setFarmsteadPlot(farm_plot,this);
-    if(g->WEIGHTED_PLOT_SEARCH)
-	   farm_plot->initFreePlots(this);
-    occupyPlot(farm_plot);
-   //*/
-	for (int i=0;i<g->NO_OF_SOIL_TYPES;i++) {
+    /*  // place farm plot in list
+      region->setFarmsteadPlot(farm_plot,this);
+      if(g->WEIGHTED_PLOT_SEARCH)
+         farm_plot->initFreePlots(this);
+      occupyPlot(farm_plot);
+     //*/
+    for (int i = 0;i < g->NO_OF_SOIL_TYPES;i++) {
         cache_land_input_of_type.push_back(0);
     }
+}
+RegFarmInfo::RegFarmInfo(RegRegionInfo* reg,
+    RegGlobalsInfo* G,
+    vector<RegProductInfo>& PCat,       // reference to market's product objects
+    vector<RegInvestObjectInfo >& ICat, // InvestCatalog
+    RegSurrogate* lporig,
+    short int pop,
+    int number,
+    int fc,
+    string farmname,
+    int farmerwerbsform)    {
+    new (this) RegFarmInfo(reg, G, PCat, ICat, pop, number, fc, farmname, farmerwerbsform);
+    use_surrogate = true;
+    initLinks(lporig);
+}
+	
+RegFarmInfo::RegFarmInfo(RegRegionInfo* reg,
+    RegGlobalsInfo* G,
+    vector<RegProductInfo>& PCat,               // reference to market's product objects
+    vector<RegInvestObjectInfo >& ICat, // InvestCatalog
+    RegLpInfo* lporig,
+    short int pop,
+    int number,
+    int fc,
+    string farmname,
+    int farmerwerbsform) {
+    new (this) RegFarmInfo(reg, G, PCat, ICat, pop, number, fc, farmname, farmerwerbsform);
+    use_surrogate = false;
+    initLinks(lporig);
+}
+
+bool RegFarmInfo::getUseSurrogate() const {
+    return use_surrogate;
+}
+
+vector<double> RegFarmInfo::getSurrogateExtraOuts() const {
+    return surrogate_extra_outs;
+}
+
+void RegFarmInfo::initLinks(RegSurrogate* lporig) {
+    lpSurrogate = lporig->clone(g);
+    lpSurrogate->initLinks(this,
+        FarmInvestList,
+        FarmProductList,
+        labour);
+}
+
+void RegFarmInfo::initLinks(RegLpInfo* lporig) {
+    lp = lporig->clone(g);
+    lp->initLinks(this,
+        FarmInvestList,
+        FarmProductList,
+        labour,
+        &liquidity,
+        &land_input,
+        &milk_quota,
+        &financing_rule,
+        &modulated_income_payment,
+        &income_payment_farm,
+        &(g->TRANCH_1_WIDTH),
+        &(g->TRANCH_2_WIDTH),
+        &(g->TRANCH_3_WIDTH),
+        &(g->TRANCH_4_WIDTH),
+        &(g->TRANCH_5_WIDTH),
+        &(g->TRANCH_1_DEG),
+        &(g->TRANCH_2_DEG),
+        &(g->TRANCH_3_DEG),
+        &(g->TRANCH_4_DEG),
+        &(g->TRANCH_5_DEG));
 }
 
 // LOCATION OF FARM
@@ -545,7 +596,14 @@ RegFarmInfo* RegFarmInfo::clone(RegGlobalsInfo* G,RegRegionInfo * reg,
     else
         (*n).wanted_plot=NULL;
     (*n).labour=new RegLabourInfo(*labour,(*n).g);
-    (*n).lp=lp->clone((*n).g);
+  if (use_surrogate) {
+    (*n).lpSurrogate=lpSurrogate->clone((*n).g);
+    (*n).lpSurrogate->initLinks(n,
+                       (*n).FarmInvestList,
+                       (*n).FarmProductList,
+                       (*n).labour);
+  }else {
+  	    (*n).lp=lp->clone((*n).g);
     (*n).lp->initLinks(n,
                        (*n).FarmInvestList,
                        (*n).FarmProductList,
@@ -567,6 +625,8 @@ RegFarmInfo* RegFarmInfo::clone(RegGlobalsInfo* G,RegRegionInfo * reg,
                        &((*n).g->TRANCH_4_DEG),
                        &((*n).g->TRANCH_5_DEG)
 );
+  	
+  }
     (*n).updateLpValues();
     (*n).contiguous_plots=contiguous_plots;
     return n;
@@ -575,7 +635,10 @@ RegFarmInfo* RegFarmInfo::clone(RegGlobalsInfo* G,RegRegionInfo * reg,
 RegFarmInfo::~RegFarmInfo() {
     farm_plot = NULL;
     if (!flat_copy) {
-        delete lp;
+    	if (use_surrogate)
+           delete lpSurrogate;
+        else 
+           delete lp;
         delete labour;
         delete FarmInvestList;
         delete FarmProductList;
@@ -645,7 +708,7 @@ RegFarmInfo::setAsynchronousFarmAge() {
 		else g->farmAgeDists[2][ran]++;
 		if (g->YoungFarmer && ran <= g->YF_startpayMaxAge) {
 			updateYoungFarmer();
-		}
+		}	
 	}
 
     // initial assets
@@ -850,7 +913,10 @@ RegFarmInfo::newRentingProcess(int period) {
         labour->setLabourCapacity(labour->getFamilyLabour()
                                   +FarmInvestList->getLabourSubstitution() // lab effect of invests inkl fix labour
                                  );
-        lp->updateCapacities();
+        if (use_surrogate)
+           lpSurrogate->updateInputValues();
+        else
+           lp->updateCapacities();   
     }
     list<RegPlotInfo* >::iterator plot_iter;
     for (plot_iter = PlotList.begin();
@@ -936,7 +1002,10 @@ RegFarmInfo::demandForLandOfType(int type,int count) {
     // the first time 3 LPs have to be computed
     if (!actual) {
         actual=true;
-        lp->updatePaymentEntitlement();
+        if (use_surrogate)
+           lpSurrogate->updatePaymentEntitlement();
+        else
+           lp->updatePaymentEntitlement();   
         lp_result=doLpWithPriceExpectation();
 
         for (int i=0;i<g->NO_OF_SOIL_TYPES;i++) {
@@ -992,12 +1061,19 @@ double RegFarmInfo::getRentOffer(RegPlotInfo* plot) {
     int type=plot->getSoilType();
     RegPlotInformationInfo pi=farm_plot->getValue(plot,this);
     if (wanted_plot_of_type[type].plot==NULL) {
-        lp->updatePaymentEntitlement();
+    	if (use_surrogate)
+           lpSurrogate->updatePaymentEntitlement();
+        else 
+          lp->updatePaymentEntitlement();  
         lp_result=doLpWithPriceExpectation();
         calculateShadowPriceForLandOfType(type,pi.pe);
     } else {
         if (pi.pe!=wanted_plot_of_type[type].pe) {
-            lp->updatePaymentEntitlement();
+        	if (use_surrogate)
+               lpSurrogate->updatePaymentEntitlement();
+            else
+               lp->updatePaymentEntitlement();
+                  
             lp_result=doLpWithPriceExpectation();
             calculateShadowPriceForLandOfType(type,pi.pe);
         }
@@ -1013,6 +1089,8 @@ double RegFarmInfo::getRentOffer(RegPlotInfo* plot) {
 
 void
 RegFarmInfo::invest(int ordernumber, int quantity, bool test) {
+	//TODO 
+    //if (quantity <= 0||quantity > 100) return;
     double acqcosts;
     while (quantity != 0) {
         acqcosts = (*invest_cat)[ordernumber].getAcquisitionCosts();
@@ -1066,9 +1144,15 @@ RegFarmInfo::adjustVarCosts() {
 double
 RegFarmInfo::doLpInvest() {
     FarmInvestList->setBackNewleyInvestedVector();
-    double objective = lp->LpWithPriceExpectation(FarmProductList,
-                       inum_vector,
+    double objective;
+  if (use_surrogate)
+    objective = lpSurrogate->LpSurrogate(FarmProductList,
+                       inum_vector, surrogate_extra_outs,
                        static_cast<int>(labour->getFamilyLabour()));
+  else 
+    objective = lp->LpWithPriceExpectation(FarmProductList,
+                       inum_vector,
+                       static_cast<int>(labour->getFamilyLabour()));                    
     // determine the catalog number of investment and the number of investments
     int iobject, num; // catalog number of investment object, index of inum_vector
     // num i number of investments in object iobject
@@ -1087,7 +1171,11 @@ RegFarmInfo::doLpInvest() {
         adjustVarCosts();
     calculateLiquidity();
     calculateFinancingRule();
-    lp->updateCapacities();
+    
+    if (use_surrogate)
+        lpSurrogate->updateInputValues();
+    else
+       lp->updateCapacities();
     FarmInvestList->getLSWithoutLabour1();
 
     return objective;
@@ -1199,9 +1287,8 @@ RegFarmInfo::periodResults(int period) {
     gm_products = FarmProductList->getGrossMarginOfType(g->PRODTYPE);
 	if (g->YoungFarmer)
 		gm_products += getYoungFarmerPay();
-
+	
     total_maintenance =  FarmInvestList->getTotalMaintenance();
-
     overheads = g->OVERHEADS * gm_products;
     fix_costs = depr;
 
@@ -1755,7 +1842,7 @@ RegFarmInfo::futureOfFarm( int period) {
 		youngfarmerPay = 0;
 	}
 
-    calculateLiquidity();
+	calculateLiquidity();
     calculateFinancingRule();
     //  resetFarmVariables();
 }
@@ -1769,6 +1856,8 @@ RegFarmInfo::anticipateNewPeriod() {
     */
 
     FarmProductList->saveProductList();
+    if (use_surrogate)
+           saveExtraOuts();
     double ec_interest = FarmProductList->getPriceOfType(g->ST_EC_INTERESTTYPE);
     bool invested = false;
     // set effect of sunk costs
@@ -1785,17 +1874,20 @@ RegFarmInfo::anticipateNewPeriod() {
     double objective = doLpWithPriceExpectation();
 
     // temporarily invest in new objects
-    for (unsigned int iobject = 0; iobject < inum_vector.size(); iobject ++) {
-        int num = inum_vector[iobject];
-        bool test = true;
-        if (num != 0) {
-            invested = true;
-            invest(iobject, num, test); // does not include updateCapacities()
-            // this is done after liquidity and financing rule
+    if (!use_surrogate) {
+        for (unsigned int iobject = 0; iobject < inum_vector.size(); iobject++) {
+            int num = inum_vector[iobject];
+            bool test = true;
+            if (num != 0) {
+                invested = true;
+                invest(iobject, num, test); // does not include updateCapacities()
+                // this is done after liquidity and financing rule
+            }
         }
     }
     // produce if no investment
-    objective = doProductionLp();
+    if (!use_surrogate) 
+       objective = doProductionLp();
     depr = FarmInvestList->depreciateCapital(&farm_repayment,
             &farm_fix_labour_income,
             &value_added,
@@ -1812,15 +1904,17 @@ RegFarmInfo::anticipateNewPeriod() {
                 - lt_interest;
 
     // production with new investment
-    if (invested) {
+    if (invested && !use_surrogate) {
         // save var. costs to be restored after planning calculation
         doLpWithPriceExpectation();
         FarmProductList->saveProductList();
+        
         adjustVarCosts();  // includes updateLpValues()
         calculateLiquidity();
         calculateFinancingRule();
+        
         // update all capacities here!!
-        lp->updateCapacities();
+        lp->updateCapacities();   
 
         // production with new investment
         objective_new = doProductionLp();
@@ -1882,6 +1976,12 @@ RegFarmInfo::anticipateNewPeriod() {
         //      double test = doProductionLp();
     }
     FarmProductList->restoreProductList();
+    if (use_surrogate)
+        restoreExtraOuts();
+
+    if (use_surrogate)
+        return objective;
+
     if (objective_new < objective)
         return objective;
     else
@@ -2029,7 +2129,10 @@ RegFarmInfo::disInvest() {
                               );
     calculateLiquidity();
     calculateFinancingRule();
-    lp->updateCapacities();
+    if (use_surrogate)
+       lpSurrogate->updateInputValues();
+    else
+       lp->updateCapacities();
     FarmInvestList->getLSWithoutLabour1();
     list<RegPlotInfo* >::iterator plot_iter;
     if (g->OLD_LAND_RELEASING_PROCESS) {
@@ -2098,7 +2201,10 @@ list<RegPlotInfo* >::iterator RegFarmInfo::releasePlot(list<RegPlotInfo* >::iter
         rented_land_of_type[type]-=g->PLOT_SIZE;
         // RELEASE PLOT FROM PLOT LIST IN CASE ITS NOT OWNED
     }
-    lp->updateLand();
+    if (use_surrogate)
+      lpSurrogate->updateLand();
+    else 
+      lp->updateLand();
     return PlotList.erase(p);
     ;
 }
@@ -2158,6 +2264,9 @@ RegFarmInfo::setOwnedPlot(RegPlotInfo* p) {
 //update yield --soil service
 void
 RegFarmInfo::updateYield() {
+  if (use_surrogate)
+    lpSurrogate->updateYield();
+  else 
     lp->updateYield();
 }
 
@@ -2167,7 +2276,12 @@ RegFarmInfo::updateYield() {
 // to be passed on to the LP object
 void
 RegFarmInfo::updateLpValues() {
-    if (lp->updateLpValues())g->LP_CHANGED=true;
+	if (use_surrogate) {
+      if (lpSurrogate->updateInputValues())g->LP_CHANGED=true;
+    }else {
+      if (lp->updateLpValues())g->LP_CHANGED=true;	
+    }
+      
 }
 
 void
@@ -2211,7 +2325,10 @@ RegFarmInfo::setDirectPayment(double payment) {
     income_payment_farm = payment;
 	if(!g->LP_MOD)
     modulateIncomePayment();
-    lp->updatePaymentEntitlement();
+    if (use_surrogate) 
+      lpSurrogate->updatePaymentEntitlement();
+    else
+      lp->updatePaymentEntitlement();  
 }
 double
 RegFarmInfo::getDirectPayment() const {
@@ -2223,7 +2340,10 @@ RegFarmInfo::incDirectPayment(double payment) {
         income_payment_farm += payment;
 	if(!g->LP_MOD)
         modulateIncomePayment();
-        lp->updatePaymentEntitlement();
+        if (use_surrogate) 
+          lpSurrogate->updatePaymentEntitlement();
+        else 
+          lp->updatePaymentEntitlement();  
     }
 }
 void
@@ -2232,23 +2352,35 @@ RegFarmInfo::decDirectPayment(double payment) {
         income_payment_farm -= payment;
 	if(!g->LP_MOD)
         modulateIncomePayment();
-        lp->updatePaymentEntitlement();
+        if (use_surrogate) 
+          lpSurrogate->updatePaymentEntitlement();
+        else
+          lp->updatePaymentEntitlement();  
     }
 }
 void
 RegFarmInfo::increaseLandCapacityOfType(int type,int no_of_plots) {
     land_input_of_type[type]+=no_of_plots*g->PLOT_SIZE;
-    lp->updateLand();
+    if (use_surrogate) 
+      lpSurrogate->updateLand();
+     else 
+       lp->updateLand();  
 }
 void
 RegFarmInfo::decreaseLandCapacityOfType(int type,int no_of_plots) {
     land_input_of_type[type]-=no_of_plots*g->PLOT_SIZE;
-    lp->updateLand();
+    if (use_surrogate) 
+      lpSurrogate->updateLand();
+    else
+      lp->updateLand();
 }
 void
 RegFarmInfo::setNoOfPlotsOfType(int type,int no_of_plots) {
     land_input_of_type[type]=no_of_plots*g->PLOT_SIZE;
-    lp->updateLand();
+    if (use_surrogate) 
+      lpSurrogate->updateLand();
+    else
+      lp->updateLand();  
 }
 int
 RegFarmInfo::getNoOfPlotsOfType(int type)const  {
@@ -2340,6 +2472,11 @@ RegFarmInfo::calculateLiquidity() {
     //@    add_st_capital = (-1) * liquidity;
     //@    liquidity += add_st_capital;
     //@  }
+
+    if (use_surrogate) {
+        liquidity = max(liquidity, g->Liquidity_Low);
+        liquidity = min(liquidity, g->Liquidity_High);
+    }
 } 
 int
 RegFarmInfo::getFarmClassChange() const {
@@ -2393,19 +2530,31 @@ RegFarmInfo::getLabSub() const  {
 double
 RegFarmInfo::doLpWithPrice() {
     int maxofffarmlu = (int) labour->getFamilyLabour()/(g->MAX_H_LU/2);
-    double objective = lp->LpWithPrice(FarmProductList, inum_vector, maxofffarmlu);
+    double objective;
+    if (use_surrogate)  
+        objective = lpSurrogate->LpSurrogate(FarmProductList, inum_vector, surrogate_extra_outs, maxofffarmlu);
+    else 
+        objective = lp->LpWithPrice(FarmProductList, inum_vector, maxofffarmlu);    
     return objective;
 }
 double
 RegFarmInfo::doLpWithPriceExpectation() {
     int maxofffarmlu = (int) labour->getFamilyLabour()/(g->MAX_H_LU/2);
-    double objective = lp->LpWithPriceExpectation(FarmProductList,inum_vector,maxofffarmlu);
+    double objective;
+    if (use_surrogate) 
+    	objective = lpSurrogate->LpSurrogate(FarmProductList,inum_vector, surrogate_extra_outs,maxofffarmlu);
+    else
+        objective = lp->LpWithPriceExpectation(FarmProductList,inum_vector,maxofffarmlu);
     return objective;
 }
 double
 RegFarmInfo::doProductionLp() {
-    int maxofffarmlu = (int) labour->getFamilyLabour()/(g->MAX_H_LU/2);
-    double objective = lp->LpProdPriceExpectation(FarmProductList,inum_vector, maxofffarmlu);
+    int maxofffarmlu = (int) labour->getFamilyLabour()/(g->MAX_H_LU/2);    
+    double objective;
+    if (use_surrogate) 
+    	objective = lpSurrogate->LpSurrogate(FarmProductList,inum_vector, surrogate_extra_outs, maxofffarmlu);
+    else
+        objective = lp->LpProdPriceExpectation(FarmProductList,inum_vector,maxofffarmlu);
     return objective;
 }
 
@@ -2508,25 +2657,34 @@ RegFarmInfo::modulateIncomePayment() {
     if (income_payment_farm>g->LB_LOW_TRANCH && income_payment_farm<=g->UB_LOW_TRANCH) {
         modulated_income_payment=(1-g->DEG_LOW_TRANCH)*(income_payment_farm);
         display_modulation=1;
-        lp->updatePaymentEntitlement();
+        lpSurrogate->updatePaymentEntitlement();
         return;
     } else {
         modulated_income_payment=(1-g->DEG_LOW_TRANCH)*g->UB_LOW_TRANCH;
         if (income_payment_farm>g->LB_MIDDLE_TRANCH && income_payment_farm<=g->UB_MIDDLE_TRANCH) {
             modulated_income_payment+=(1-g->DEG_MIDDLE_TRANCH)*(income_payment_farm-g->UB_LOW_TRANCH);
             display_modulation=2;
-            lp->updatePaymentEntitlement();
+            if (use_surrogate)
+              lpSurrogate->updatePaymentEntitlement();
+            else 
+              lp->updatePaymentEntitlement();
             return;
         } else {
             modulated_income_payment+=(1-g->DEG_MIDDLE_TRANCH)*(g->UB_MIDDLE_TRANCH-g->UB_LOW_TRANCH);
             if (income_payment_farm>g->LB_HIGH_TRANCH && income_payment_farm<=g->UB_HIGH_TRANCH) {
                 modulated_income_payment+=(1-g->DEG_HIGH_TRANCH)*(income_payment_farm-g->UB_MIDDLE_TRANCH);
                 display_modulation=3;
-                lp->updatePaymentEntitlement();
+                if (use_surrogate) 
+                   lpSurrogate->updatePaymentEntitlement();
+                else
+                   lp->updatePaymentEntitlement();   
                 return;
             } else {
                 modulated_income_payment+=(1-g->DEG_HIGH_TRANCH)*(income_payment_farm-g->UB_MIDDLE_TRANCH);
-                lp->updatePaymentEntitlement();
+                if (use_surrogate)
+                   lpSurrogate->updatePaymentEntitlement();
+                else
+                   lp->updatePaymentEntitlement();
             }
         }
     } } else {
@@ -2695,7 +2853,10 @@ RegFarmInfo::cacheLandInput() {
     for (int i=0;i<g->NO_OF_SOIL_TYPES;i++) {
         cache_land_input_of_type[i]=land_input_of_type[i];
     }
-    lp->updateLand();
+    if (use_surrogate) 
+       lpSurrogate->updateLand();
+    else 
+       lp->updateLand();   
 }
 void
 RegFarmInfo::restoreLandInput() {
@@ -2703,18 +2864,27 @@ RegFarmInfo::restoreLandInput() {
     for (int i=0;i<g->NO_OF_SOIL_TYPES;i++) {
         land_input_of_type[i]=cache_land_input_of_type[i];
     }
-    lp->updateLand();
+    if (use_surrogate) 
+       lpSurrogate->updateLand();
+    else
+       lp->updateLand();
 }
 double
 RegFarmInfo::getObjective(double land_input) {
     land_input_of_type[0]=land_input;
-    lp->updateLand();
+    if (use_surrogate) 
+       lpSurrogate->updateLand();
+    else
+       lp->updateLand();
     double t2=doLpWithPriceExpectation();
     return t2;
 }
 double
 RegFarmInfo::getObjective() {
-    lp->updateLand();
+	if (use_surrogate) 
+      lpSurrogate->updateLand();
+    else
+       lp->updateLand();  
     double t2=doLpWithPriceExpectation();
     return t2;
 }
@@ -2805,12 +2975,23 @@ void RegFarmInfo::initVectorOfContiguousPlots() {
     }
 }
 
+void RegFarmInfo::saveExtraOuts() {
+    surrogate_extra_outs_old = surrogate_extra_outs;
+}
+
+void RegFarmInfo::restoreExtraOuts() {
+    surrogate_extra_outs = surrogate_extra_outs_old;
+}
+
 void
 RegFarmInfo::backup() {
     obj_backup=clone();
     FarmProductList->backup();
     FarmInvestList->backup();
-    lp->backup();
+    if (use_surrogate) 
+       ;//lpSurrogate->backup();
+    else
+       lp->backup();
     labour->backup();
 }
 void
@@ -2820,7 +3001,10 @@ RegFarmInfo::restore() {
     obj_backup=tmp;
     FarmProductList->restore();
     FarmInvestList->restore();
-    lp->restore();
+    if (use_surrogate)
+       ;//lpSurrogate->restore();
+    else
+       lp->restore();
     labour->restore();
 }
 void
@@ -2874,4 +3058,6 @@ double RegFarmInfo::getUnitsOfProduct(int i) const{
 
 double RegFarmInfo::getVarCostsOfProduct(int i) const {
         return FarmProductList->getVarCostsOfNumber(i);
+
 }
+

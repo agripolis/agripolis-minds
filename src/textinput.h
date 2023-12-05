@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -25,6 +25,10 @@
 #include <cctype>
 
 using namespace std;
+const string  SURROGATE_DIR = "surrogate\\";
+const string  SURROGATE_MODEL = "model.txt";
+const string  SURROGATE_INPUT = "in_variables.txt";
+const string  SURROGATE_OUTPUT = "out_variables.txt";
 
 const string  DEMOGRAPH_FILE = "demographics.txt";
 const string  YOUNGFARMER_FILE = "youngfarmer.txt";
@@ -150,9 +154,15 @@ struct onelink {
     string   valuetype;
     double factor;
 
-    onelink(): numbertype("-"), factor(0){}
+    onelink(): numbertype("-"), factor(1){}
 } ;
 
+struct surrogateIO {
+    vector<onelink> inputlinks;
+    vector<string> output_names;
+};
+
+extern struct surrogateIO surrogateIO;
 
 struct caplinkdata{
      vector <onelink> caplinks;
@@ -244,10 +254,12 @@ struct oneproduct {
     bool pricesupp;
     int refprem;
     int xyears;
+    double yield;
+
 	oneproduct(){}
 	oneproduct(int typ, string nam, double pric, double lab):type(typ),group(-1),name(nam),stdName("-"),
 	         price(pric),varcost(0),labour(lab),priceflex(0),changerate(1),prodbytype("NON"),
-	         luperplace(0),premium(false),initprem(0),pricesupp(false),refprem(0),xyears(0){}
+	         luperplace(0),premium(false),initprem(0),pricesupp(false),refprem(0),xyears(0),yield(1.){}
 };
 
 struct oneyield {

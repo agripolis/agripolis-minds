@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -586,6 +586,36 @@ RegInvestList::getNormalizedCapacityOfType(int t) {
     else
         return 0;
 }
+
+double RegInvestList::getNNcapacityOfNumber(int t) {
+    double cap = 0;
+    list<RegInvestObjectInfo >::iterator invest;
+    for (invest = farm_invests.begin();
+        invest != farm_invests.end();
+        ++invest) {
+        RegInvestObjectInfo p = (*invest);
+        if (p.getCatalogNumber() == t)
+            cap += 1; // p.getCapacity();
+    }
+    return cap;
+}
+
+//TODO multiple ages
+int RegInvestList::getNNageOfNumber(int t) {
+    int age = -10;
+    list<RegInvestObjectInfo >::iterator invest;
+    for (invest = farm_invests.begin();
+        invest != farm_invests.end();
+        ++invest) {
+        RegInvestObjectInfo p = (*invest);
+        if (p.getCatalogNumber() == t) {
+            age = p.getInvestAge();
+            break;
+        }
+    }
+    return age;
+}
+
 
 double
 RegInvestList::getCapacityOfType(int t) {
