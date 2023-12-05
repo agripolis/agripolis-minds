@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -358,6 +358,9 @@ public:
                              bool sunkcostrelevant,
                              bool older,
                              const double& equity_interest);
+    double getNNcapacityOfNumber(int);
+    int getNNageOfNumber(int);
+
     double getCapacityOfType(int);
     // returns the capacity of type normalized to the norm_labour_subtitutuion
     double getNormalizedCapacityOfType(int);

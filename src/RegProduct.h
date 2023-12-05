@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -79,6 +79,7 @@ private:
     double reference_premium;
 	double refPremPercent;
     double reference_premium_calc_time;
+    double yield;
 
     //Environmental variables 20060426
     double N_usage;
@@ -147,6 +148,14 @@ public:
     bool getPriceSupport() const {
         return price_support;
     }
+    void setYield(double y) {
+        yield = y;
+    }
+    double getYield() {
+        return yield;
+    }
+
+
     /// constructor
     RegProductInfo() {};
 
@@ -363,6 +372,10 @@ public:
 
     /// get var costs of product number (not type!!!)
     double getVarCostsOfNumber(int);
+    
+    double getNNpriceOfNumber(int);
+    double getNNyieldOfNumber(int);
+
     void setVarCostsOfNumber(int, double);
     /// get price of product number
     double getPriceOfNumber(int);

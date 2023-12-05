@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -21,6 +21,8 @@
 #include "RegGlobals.h"
 #include "RegLabour.h"
 #include "RegPlotInformation.h"
+#include "RegSurrogate.h"
+
 /** RegFarmInfo class.
     @short class defines the properties and actions of a single farm.
     @author Kathrin Happe, Alfons Balmann, Konrad Kellermann
@@ -36,7 +38,15 @@ class RegLpInfo;
 class RegProductList;
 class RegProductInfo;
 class RegFarmInfo {
+    friend class RegSurrogate;
 protected:
+    vector<double> surrogate_extra_outs;
+    vector<double> surrogate_extra_outs_old;
+    bool use_surrogate;
+    
+    void initLinks(RegSurrogate*);
+    void initLinks(RegLpInfo*);
+
 	void changeGeneration();
 
 	double reinvestLUcap;
@@ -49,8 +59,8 @@ protected:
 	double youngfarmerPay;
 	bool youngfarmerPaid;
 	bool youngfarmerMinSize;
-
-	//soil service
+	
+    //soil service
 	vector<double> avCarbons;  //mean
 	vector<double> varCarbons; //variance
 	vector<double> deltCarbons;
@@ -85,7 +95,7 @@ protected:
     int 	   legal_type;
 
     // number of plots rented by farm
-    int 	   number_of_plots;
+    int 	   number_of_plots = 0;
     double   milk_quota;
     // input of land in production in ha
     double   land_input;
@@ -298,6 +308,11 @@ protected:
     bool flat_copy;
 
 public:
+    bool getUseSurrogate()const;
+    vector<double> getSurrogateExtraOuts() const;
+    void saveExtraOuts();
+    void restoreExtraOuts();
+
 	void setReinvestLUcap();
 	double& getRefReinvestLUcap();
 	map<string, int> getRestrictedInvests();
@@ -311,7 +326,6 @@ public:
 	double getYoungFarmerPay() const ;
 	void updateYoungFarmerLand();
 	void updateYoungFarmer();
-
 	int getGenerationChange() const {
 		return GenChange_demograph;
 	}
@@ -352,6 +366,15 @@ public:
         flat_copy=false;
         obj_backup=NULL;
     };
+    RegFarmInfo(RegRegionInfo* reg,
+        RegGlobalsInfo* G,
+        vector<RegProductInfo >& PCat,
+        vector<RegInvestObjectInfo >& ICat,
+        short int pop,
+        int number,
+        int fc,
+        string farmname,
+        int farmerwerbsform);
     RegFarmInfo(RegRegionInfo * reg,
                 RegGlobalsInfo* G,
                 vector<RegProductInfo >& PCat,
@@ -362,6 +385,16 @@ public:
                 int fc,
                 string farmname,
                 int farmerwerbsform);
+    RegFarmInfo(RegRegionInfo * reg,
+                RegGlobalsInfo* G,
+                vector<RegProductInfo >& PCat,
+                vector<RegInvestObjectInfo >& ICat ,
+                RegSurrogate* lporig,
+                short int pop,
+                int number,
+                int fc,
+                string farmname,
+                int farmerwerbsform);            
     virtual RegFarmInfo* clone(RegGlobalsInfo* G,RegRegionInfo * reg,
                                vector<RegProductInfo> &PCat,
                                vector<RegInvestObjectInfo >& ICat);
@@ -380,7 +413,8 @@ public:
     /// pointer to labour class that manages farm labour
     RegLabourInfo  *labour;
     // pointer to MIP
-    RegLpInfo            *lp;
+    RegLpInfo* lp;
+    RegSurrogate  *lpSurrogate;
 
 	// PUBLIC METHODS
     // Ga

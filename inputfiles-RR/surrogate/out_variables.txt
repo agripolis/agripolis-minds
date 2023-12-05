@@ -1,0 +1,123 @@
+GDB	Objective_Value
+plough	plough
+tractor	tractor
+tractorSmall	tractorSmall
+chiselPlough	chiselPlough
+sowMachine	sowMachine
+directSowMachine	directSowMachine
+seedBedCombi	seedBedCombi
+circHarrow	circHarrow
+springTineHarrow	springTineHarrow
+fingerHarrow	fingerHarrow
+combine	combine
+cuttingUnitCere	cuttingUnitCere
+cuttingAddRape	cuttingAddRape
+cuttingUnitMaiz	cuttingUnitMaiz
+rotaryHarrow	rotaryHarrow
+mulcher	mulcher
+potatoPlanter	potatoPlanter
+potatoLifter	potatoLifter
+hoe	hoe
+ridger	ridger
+haulmCutter	haulmCutter
+forkLiftTruck	forkLiftTruck
+threeWayTippingTrailer	threeWayTippingTrailer
+Sprayer	Sprayer
+singleSeeder	singleSeeder
+beetHarvester	beetHarvester
+fertSpreaderSmall	fertSpreaderSmall
+fertSpreaderLarge	fertSpreaderLarge
+cornHeader	cornHeader
+mowerConditioner	mowerConditioner
+grasReseedingUnit	grasReseedingUnit
+rotaryTedder	rotaryTedder
+rake	rake
+roller	roller
+balePressHay	balePressHay
+manbarrel	manbarrel
+draghose	draghose
+injector	injector
+trailingshoe	trailingshoe
+solidManDist	solidManDist
+frontLoader	frontLoader
+siloBlockCutter	siloBlockCutter
+shearGrab	shearGrab
+dungGrab	dungGrab
+fodderMixingVeh8	fodderMixingVeh8
+fodderMixingVeh10	fodderMixingVeh10
+fodderMixingVeh16	fodderMixingVeh16
+potaStore500t	potaStore500t
+bunkerSilo450	bunkerSilo450
+bunkerSilo900	bunkerSilo900
+bunkerSilo1620	bunkerSilo1620
+bunkerSilo2640	bunkerSilo2640
+bunkerSilo3630	bunkerSilo3630
+bunkerSilo4620	bunkerSilo4620
+bunkerSilo8580	bunkerSilo8580
+bunkerSilo11870	bunkerSilo11870
+bunkerSilo26550	bunkerSilo26550
+HIREDLAB	HIREDLAB
+OFFFARMLAB	OFFFARMLAB
+ST_BORROW_CAP	ST_BORROW_CAP
+EC_INTEREST	EC_INTEREST
+V_HIRED_LABOUR	V_HIRED_LABOUR
+V_OFF_FARM_LAB	V_OFF_FARM_LAB
+AGRI_SERVICES	AGRI_SERVICES
+WinterWheat	WinterWheatPrice
+WinterRye	WinterRyePrice
+SummerCere	SummerCerePrice
+WinterRape	WinterRapePrice
+SummerPeas	SummerPeasPrice
+SugarBeet	SugarBeetPrice
+WinterBarley	WinterBarleyPrice
+SummerTriticale	SummerTriticalePrice
+MaizCorn	MaizCornPrice
+SummerBeans	SummerBeansPrice
+Potatoes	PotatoesPrice
+# CerealStraw	CerealStrawPrice
+SET_ASIDE	SET_ASIDE
+DAIRY_COW	DAIRY_COW
+LEASE_QUOTA	LEASE_QUOTA
+LET_QUOTA	LET_QUOTA
+COUPLED_PREM_UNMOD	COUPLED_PREM_UNMOD
+DECOUPLED_PREM_UNMOD	DECOUPLED_PREM_UNMOD
+TOTAL_PREM_MODULATED	TOTAL_PREM_MODULATED
+TRANCH_1	TRANCH_1
+TRANCH_2	TRANCH_2
+TRANCH_3	TRANCH_3
+TRANCH_4	TRANCH_4
+TRANCH_5	TRANCH_5
+IDLE_ARABLE	IDLE_ARABLE
+IDLE_GRASS	IDLE_GRASS
+EXCESS_LU	EXCESS_LU
+Diesel	
+AHL	
+seed	
+PK_18_10	
+Lime	
+Herb	
+Fung	
+Insect	
+growthContr	
+hailIns	
+NSurplus
+PSurplus
+humBal
+NminFert
+PminFert
+NneedPlanning
+NneedMin
+PneedMin
+NOverNeed
+eApplMinNH3
+eApplMinN2O
+eApplMinNOx
+eApplMinN2
+eApplMinN2Oind
+eLeachN
+eLeachN2Oind
+elossP
+eNH3aggr
+eN2Oaggr
+eNOXaggr
+eN2aggr	

@@ -1,0 +1,17 @@
+FarmName  COMBINED-1		
+		
+!              Investition	Anzahl	Kapazitaet
+		
+plough	1	2000
+tractor	1	10000
+tractorSmall	1	10000
+chiselPlough	1	2600
+sowMachine	1	2250
+seedBedCombi	1	2250
+mulcher	1	3850
+potatoPlanter	1	1400
+ridger	1	1200
+forkLiftTruck	1	9000
+singleSeeder	1	750
+fertSpreaderSmall	1	2000
+#potaStore500t	1	500

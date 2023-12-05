@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -17,8 +17,10 @@
 #include <stdio.h>
 #include <iterator>
 #include <vector>
+#include <filesystem>
 #include "textinput.h"
 #include "RegGlobals.h"
+
 
 string inputdir;
 bool hasCarbon;
@@ -43,6 +45,8 @@ static void tokenize(const string& str,
     }
     if (n<2) tokens.push_back("=");
 }
+
+void  readlink(istringstream& is, onelink& cl, int dk);
 
 //static
  void glob(string fname=GLOBFILE) {
@@ -582,7 +586,7 @@ void readmarket() {
                     &&str1.compare("PRICE") && str1.compare("VARCOST") && str1.compare("LABOUR") && str1.compare("PRICEFLEX")
                     &&str1.compare("CHANGERATE") && str1.compare("PRODUCEDBYFARMTYPE") && str1.compare("LUPERPLACE")
                     &&str1.compare("PREMIUM") && str1.compare("INITPREM") && str1.compare("PRICESUPP")
-                    &&str1.compare("REFPREM") && str1.compare("XYEARS")  ))
+                    &&str1.compare("REFPREM") && str1.compare("XYEARS")&& str1.compare("YIELD")))
                         marketCols[str1]=i;
                 i++;
             }
@@ -630,8 +634,11 @@ void readmarket() {
                     prod.refprem = atoi (str1.c_str());
              else if ( marketCols["XYEARS"]==j)
                     prod.xyears = atoi(str1.c_str());
+             else if (marketCols["YIELD"] == j)
+                 prod.yield = atof(str1.c_str());
              j++;
         }
+        prod.price = prod.price * prod.yield; // price into euro/ha
         marketdata.products.push_back(prod);
   }
   ins.close();
@@ -941,6 +948,109 @@ void readinvest() {
   return;
 }
 
+void readSurrogateInput() {
+    ifstream ins;
+    stringstream ss;
+    ss << inputdir << SURROGATE_DIR << SURROGATE_INPUT;
+    ins.open(ss.str().c_str(), ios::in);
+    if (!ins.is_open()) {
+        cerr << "Error while opening: " << ss.str() << "\n";
+        exit(2);
+    }
+
+    string s;
+    while (!ins.eof()) {
+        getline(ins, s);
+
+        vector <string> tokens;
+        tokenize(s, tokens, " =;\t");
+        if (tokens.size() == 1) continue;
+        if (tokens[0][0] == '#') continue;
+
+        istringstream is(s);
+
+        onelink cl;
+        int dk = 3; //Surrogate
+        readlink(is, cl, dk);
+        surrogateIO.inputlinks.push_back(cl);
+    }
+    ins.close();
+    return;
+}
+
+void readSurrogateOutput() {
+    ifstream ins;
+    stringstream ss;
+    ss << inputdir << SURROGATE_DIR << SURROGATE_OUTPUT;
+    ins.open(ss.str().c_str(), ios::in);
+    if (!ins.is_open()) {
+        cerr << "Error while opening: " << ss.str() << "\n";
+        exit(2);
+    }
+
+    string s;
+    while (!ins.eof()) {
+        getline(ins, s);
+
+        vector <string> tokens;
+        tokenize(s, tokens, " =;\t");
+        if (tokens.size() == 1) continue;
+        if (tokens[0][0] == '#') continue;
+
+        if (tokens[1]=="=") 
+            surrogateIO.output_names.push_back(tokens[0]);
+        else
+            surrogateIO.output_names.push_back(tokens[1]);
+    }
+    ins.close();
+    return;
+}
+
+void readSurrogateModel() {
+    ifstream ins;
+    stringstream ss;
+    ss << inputdir << SURROGATE_DIR << SURROGATE_MODEL;
+    ins.open(ss.str().c_str(), ios::in);
+    if (!ins.is_open()) {
+        cerr << "Error while opening: " << ss.str() << "\n";
+        exit(2);
+    }
+
+    string s;
+    while (!ins.eof()) {
+        getline(ins, s);
+
+        vector <string> tokens;
+        tokenize(s, tokens, " =;\t");
+        if (tokens.size() == 1) continue;
+        if (tokens[0][0] == '#') continue;
+
+        string tt = tokens[0];
+        transform(tt.begin(), tt.end(), tt.begin(), [](unsigned char c) {return toupper(c);});
+
+        if (tt == "MODEL_DIR")
+            gg->SurrogateParas.model_dir = tokens[1];
+        else if (tt == "DIM_IN")
+            gg->SurrogateParas.dim_in = stoi(tokens[1]);
+        else if (tt == "DIM_OUT")
+            gg->SurrogateParas.dim_out = stoi(tokens[1]);
+        else if (tt == "INPUT_NAME")
+            gg->SurrogateParas.input_name = tokens[1];
+        else if (tt == "OUTPUT_NAME")
+            gg->SurrogateParas.output_name = tokens[1];
+        else;
+    }
+    ins.close();
+    return;
+}
+
+void readSurrogate() {
+    readSurrogateModel();
+    readSurrogateInput();
+    readSurrogateOutput();
+    return;
+}
+
 //static
 void  readmatrix() {
     ifstream ins;
@@ -1017,7 +1127,9 @@ void  readmatrix() {
                     }
                     matrixdata.mat.push_back(vd);
                     rows++;
-            default:   ;
+                    break;
+            default:   
+                break;
         }
     }
     ins.close();
@@ -1094,11 +1206,20 @@ void  readmatrix_new() {
 						arest.terms0.push_back(trim(tokens[k]));
                     }
 					matrixdata_n.Restricts0.push_back(arest);
-            default:   ;
+                    break;
+            default:   
+                break;
         }
     }
    ins.close();
    return;
+}
+
+#include <regex>
+static void adjustNumbertype(onelink& x) {
+    string oname = x.numbertype;
+    string name = regex_replace(oname, regex("Yield"), "Price");
+    x.numbertype = name;
 }
 
 //static
@@ -1117,7 +1238,7 @@ void  readmatrix_new() {
             cl.valuetype=str1;
             is >> str1;
             //matrix links reference type no factor ?!
-            cl.factor=str1.compare("")==0? 0: atof(str1.c_str());
+            cl.factor=str1.compare("")==0? 1: atof(str1.c_str());
         }else if (str1.compare("LAND")==0) {
             is >> str1;
             cl.valuetype = str1;
@@ -1131,6 +1252,8 @@ void  readmatrix_new() {
 				is >> str1;
 				cl.numbertype = str1;
 			}
+            if (dk == 3)
+                cl.numbertype = cl.name;
             is >> str1;
             cl.valuetype = str1;
             is >> d;
@@ -1145,11 +1268,15 @@ void  readmatrix_new() {
 				is >> str1;
 				cl.numbertype = str1;
 			}
+            if (dk == 3)
+                cl.numbertype = cl.name;
             is >> str1;
             cl.valuetype = str1;
             is >> d;
             cl.factor= d;
         }
+        if (!cl.valuetype.compare("nnY"))
+            adjustNumbertype(cl);
    return;
 }
 
@@ -1296,7 +1423,14 @@ void  readmatrixlinks() {
 
 //static
 void readmip(){
+    namespace fs = std::filesystem;
+    fs::path p = gg->INPUTFILEdir + "./" + MIPDIR;
+    if (!fs::exists(p)) {
+        gg->hasMIP = false;
+        return;
+    }
     //readmatrix();
+    gg->hasMIP = true;
     readmatrix_new();
     readcaplinks();
     readobjlinks();
@@ -1308,7 +1442,7 @@ void readmip(){
 void readfiles(string idir, bool hasSoilservice){
     inputdir = idir;
 	hasCarbon = hasSoilservice;
-
+    
     glob();
 	if (gg->ManagerDemographics)
 		demograph();
@@ -1330,6 +1464,8 @@ void readfiles(string idir, bool hasSoilservice){
 	if (hasCarbon) readyield();
     readinvest();
 
+    if (gg->Use_Surrogate_Model)
+        readSurrogate();
     readmip();
     return;
 }

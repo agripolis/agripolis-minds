@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -1154,7 +1154,11 @@ farmout
         }
     }
     farmout << "global_strategy\t";
-    farmout << "display_modulation\n";
+    farmout << "display_modulation\t";
+    for (auto v : g->Surrogate_Extra_outnames) {
+        farmout << v << "\t";
+    }
+    farmout << "\n";
     farmout.close();
 }
 void
@@ -1425,6 +1429,13 @@ RegDataInfo::cacheFarmResults(const RegFarmInfo* farm,
     }
     res.push_back(g->GLOBAL_STRATEGY);
     res.push_back((double)farm->getDisplayModulation());
+    
+    if (farm->getUseSurrogate()) {
+        vector<double> av = farm->getSurrogateExtraOuts();
+        for (auto v : av) {
+            res.push_back(v);
+        }
+    }
 
     farm_results.push_back(res);
 }

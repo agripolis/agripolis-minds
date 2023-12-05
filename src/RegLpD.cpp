@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -95,21 +95,16 @@ void
 RegLpInfo::debug(string filename) {
     ofstream out;
     out.open(filename.c_str(),ios::trunc);
-    if (objsen == -1)
-        out << "max:\t";
+    if (objsen==-1)
+        out << "max:\t" ;
     else
         out << "min:\t";
-    
-    for (int i = 0; i < numcols; i++) {
-        out << matrixdata.colnames[i] << "\t";
-    }
-    out << "\n\t";
     for (int i=0;i<numcols;i++) {
         out << setprecision(10) << obj[i] << "\t";
     }
     out << "\n\n";
     for (int i=0;i<numrows;i++) {
-        out << matrixdata.rownames[i]<<"\t";
+        out << "\t";
         for (int j=0;j<numcols;j++) {
             out << mat_val[i+j*numrows] << "\t";
         }
@@ -337,6 +332,8 @@ RegLpInfo::updateLpValues() {
         if (reference_links[i]->trigger()) changed=true;
     for (unsigned i=0;i<number_links.size();i++)
         if (number_links[i]->trigger()) changed=true;
+    for (auto lk : land_links)
+        if (lk->trigger()) changed = true;
 	if (g->HAS_SOILSERVICE){
 		for (unsigned i=0;i<yield_links.size();i++)
 			if (yield_links[i]->trigger()) changed=true;
@@ -1005,7 +1002,8 @@ RegLpInfo::readLink(int dn,int dk) {
 				//lk.numbertype=lk.name;
                 dn = colindex[lk.name];
                 break;
-    default: ;
+    default: 
+                break;
     }
 
     return mklink(lk,dn,dk);
@@ -1323,7 +1321,7 @@ RegLpInfo::initLinks(RegFarmInfo*f,
 	   case 23:
 		   source = &farm->refYoungFarmerYears();
 		   break;
-        default:
+	   default:
             break;
         }
 

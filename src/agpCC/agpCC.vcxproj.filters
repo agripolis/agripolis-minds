@@ -81,6 +81,12 @@
     <ClCompile Include="..\textinput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\surrogate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RegSurrogate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\evalkern.h">
@@ -167,8 +173,14 @@
     <ClInclude Include="..\AgriPoliS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\surrogate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RegSurrogate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\glpk_4_45.lib" />
+    <Library Include="..\glpk_4_45_x64.lib" />
   </ItemGroup>
 </Project>

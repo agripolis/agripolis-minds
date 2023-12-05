@@ -1,0 +1,5 @@
+iteration 0					
+					
+					
+	tranch:	tranch_2_deg=0.10;	tranch_3_deg=0.10;	tranch_4_deg=0.10;	tranch_5_deg=0.14;
+	others:	rhs_row:Grazing_Land=EQ;	rhs_row:Arable_Land=EQ;		

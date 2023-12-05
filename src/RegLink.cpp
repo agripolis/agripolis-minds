@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -64,8 +64,11 @@ RegLinkMarketObject::trigger() {
     case 3:
         res_value=source->getGmOrGmExpectedOfNumber(source_number)*factor;
         break;
-    /*case 4:
-        res_value= source->getNoptOfNumber(source_number)*factor;
+    case 4:
+        res_value = source->getNNpriceOfNumber(source_number) * factor;
+        break;
+    case 5:  
+        res_value = source->getNNyieldOfNumber(source_number) * factor;
         break;
 	//*/
 
@@ -104,6 +107,9 @@ RegLinkMarketObject::debug() {
         break;
     case 2:
         r=" obj ";
+        break;
+    case 3:
+        r = "surrogate";
         break;
     default:
         r=" undef. ";
@@ -227,6 +233,12 @@ RegLinkInvestObject::trigger() {
     case 4:
         res_value=source->getNormalizedCapacityOfType(source_number)*factor;
         break;
+    case 5:
+        res_value = source->getNNageOfNumber(source_number) * factor;
+        break;
+    case 6:
+        res_value = source->getNNcapacityOfNumber(source_number) * factor;
+        break;
     default:
         res_value=9999;
     }
@@ -267,6 +279,9 @@ RegLinkInvestObject::debug() {
         break;
     case 2:
         r=" obj ";
+        break;
+    case 3:
+        r = "surrogate";
         break;
     default:
         r=" undef. ";

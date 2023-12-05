@@ -1,9 +1,9 @@
 /*************************************************************************
-* This file is part of AgriPoliS
+* This file is part of AgriPoliS-MINDS
 *
 * AgriPoliS: An Agricultural Policy Simulator
 *
-* Copyright (c) 2021, Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
+* Copyright (c) 2023 Alfons Balmann, Kathrin Happe, Konrad Kellermann et al.
 * (cf. AUTHORS.md) at Leibniz Institute of Agricultural Development in 
 * Transition Economies
 *
@@ -363,6 +363,15 @@ double
 RegProductList::getPriceOfNumber(int n) {
     return (*products)[n].getPrice();
 }
+
+double RegProductList::getNNpriceOfNumber(int n) {
+    return (*products)[n].getPrice()/(*products)[n].getYield();
+}
+
+double RegProductList::getNNyieldOfNumber(int n) {
+    return (*products)[n].getYield();
+}
+
 double
 RegProductList::getPriceExpectationOfNumber(int n) {
     return (*products)[n].getPriceExpectation();

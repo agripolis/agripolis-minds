@@ -1,0 +1,32 @@
+#	generated from ===> Altmark_input.xlsm <===				
+					
+					
+#	Capacitylinks  ------------				
+					
+#		linkType	number	valueType	factor
+					
+	liquidity	reference		liquidity	1
+	financing_rule	reference		financialrule	1
+	labour	reference		labour	1
+	Arable_Land	land		Arable_Land	1
+	Grazing_Land	land		Grazing_Land	1
+	set_aside_min	number	0		
+	set_aside_max	number	0		
+#	milk_quota	reference		milk	1
+	LU	number	0		
+	LU_upper_limit	number	1000		
+	coupled_premium	number	0		
+	decoupled_premium	reference		unmodincomepay	
+	sum_prem	number	0		
+	dist_prem	number	0		
+	modulated_prem	number	0		
+	max_tranch1	reference		tranch1width	1
+	max_tranch2	reference		tranch2width	1
+	max_tranch3	reference		tranch3width	1
+	max_tranch4	reference		tranch4width	1
+	max_tranch5	reference		tranch5width	1
+	tranch1	number	0		
+	tranch2	number	0		
+	tranch3	number	0		
+	tranch4	number	0		
+	tranch5	number	0		
