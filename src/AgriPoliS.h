@@ -254,6 +254,9 @@ gg->RUNS=atoi(optionsdata["RUNS"].c_str());
 gg->TEILER = atoi(optionsdata["TEILER"].c_str());
 
 gg->Use_Surrogate_Model = optionsdata["USE_SURROGATE_MODEL"].compare("true") == 0 ? true : false;
+gg->RedZone = optionsdata["REDZONE"].compare("true") == 0 ? true : false;
+if (gg->RedZone)
+	gg->RedZone_fraction = atof(optionsdata["REDZONE_FRACTION"].c_str());
 
 gg->RestrictInvestments=optionsdata["RESTRICTINVESTMENTS"].compare("true") == 0 ? true : false;
 

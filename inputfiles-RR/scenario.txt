@@ -8,6 +8,8 @@ NASG	false
 Teiler	10
 
 Use_surrogate_model	true
+RedZone	true
+RedZone_fraction	0.15
 
 ManagerCoeffDistribution	Normal
 ManagerDemographics	false
