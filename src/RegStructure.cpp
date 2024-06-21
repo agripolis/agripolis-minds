@@ -61,6 +61,8 @@ RegRegionInfo::RegRegionInfo(const RegRegionInfo& rh,RegGlobalsInfo* G):g(G) {
     total_tacs=rh.total_tacs;
     fix_tacs=rh.fix_tacs;
     var_tacs=rh.var_tacs;
+
+    inRedzones = rh.inRedzones;
 }
 
 // destroy the region
@@ -148,6 +150,118 @@ RegRegionInfo::releasePlot(RegPlotInfo* p) {
     free_plots.push_back(p);
 }
 
+void RegRegionInfo::outputRedzone() {
+    int pzt = int(g->RedZone_fraction * 1000);
+    string filename = "redzone" + to_string(pzt) + ".txt";
+    ofstream of;
+    of.open(filename, std::ofstream::app );
+    int rows = g->NO_ROWS;
+    int cols = g->NO_COLS;
+    int sz = inRedzones.size();
+
+    for (auto i = 0; i < sz; i++) {
+        of<<i % cols <<"\t"<< i / cols<<"\t"<< inRedzones[i]<<"\n";
+    }
+}
+
+static pair<int,int> calcXYsquare(int xc, int yc, int i, int k, int l, int j) {
+    int x, y;
+    if (i == 0)
+        return make_pair(xc, yc);
+    switch (j) {
+    case 0: y = yc - i;
+        x = xc + k * l;
+        break;
+    case 1: y = yc + k*l;
+        x = xc + i;
+        break;
+    case 2: y = yc + i;
+        x = xc + k * l;
+        break;
+    case 3: y = yc +k*l;
+        x = xc -i ;
+        break;
+    default:
+        x = xc;
+        y = yc;
+    }
+    return make_pair(x, y);
+}
+
+static void updateRZindsSquare(int& i, int& k, int& l, int& j) {
+    if (i == 0) {
+        i++;
+        return;
+    }
+    if (j < 3) {
+        j++;
+    } else {
+        j = 0;
+        if (l > 0 || k==0) {
+            l = -1;
+            if (k == i) {
+                i++;
+                k = 0;
+            } else {
+                k++;
+            }
+        }  else {
+            l = 1;
+        }
+    }
+}
+
+//Torus property
+static void corrXY(int rows, int cols, int& x, int& y) {
+    if (x >= cols)
+        x = cols - x;
+    if (x < 0)
+        x += cols;
+    if (y >= rows)
+        y = rows - y;
+    if (y < 0)
+        y += rows;
+}
+
+void RegRegionInfo::initRedzone() {
+    int rows = g->NO_ROWS;
+    int cols = g->NO_COLS;
+
+    inRedzones.resize(rows * cols);
+    int xr = rows / 2;
+    int yr = cols / 2;
+    float frac = 0;
+    float rz = g->RedZone_fraction;
+    int agplots = 0;
+    for (auto z = 0; z < g->NO_OF_SOIL_TYPES; z++) {
+        agplots += plots_of_type[z];
+    }
+    int redplots = 0;
+
+    if (frac >= rz)
+        return;
+
+    int x, y;
+    int i = 0, k = 0, l = -1, j = 0;
+    while (true) {
+        auto p = calcXYsquare(xr, yr, i, k, l, j);
+        x = p.first;
+        y = p.second;
+        corrXY(rows, cols, x, y);
+        
+        int pos = y * g->NO_ROWS + x;
+        if (plots[pos]->getSoilName().compare("Arable_Land") == 0) {
+            inRedzones[pos] = 1;
+            redplots++;
+            frac = redplots*1.0 / agplots;
+            if (frac >= rz) {
+                break;
+            }
+        }
+        updateRZindsSquare(i, k, l, j);
+    }
+}
+
 // initialise region
 void
 RegRegionInfo::initialisation() {
@@ -191,6 +305,11 @@ RegRegionInfo::initialisation() {
     }
     countFreePlotsOfType();
     countPlotsOfType();
+    
+    if (g->RedZone)
+        initRedzone();
+    if (false)  //test
+        outputRedzone();
 }
 
 void

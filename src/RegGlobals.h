@@ -48,6 +48,10 @@ public:
     int Use_Surrogate_Percent;
     SurrogatePara SurrogateParas;
     vector<string> Surrogate_Extra_outnames;
+
+    //RedZone
+    bool RedZone = false;
+    double RedZone_fraction = 0.25;
     
 	//emsland
 	bool RestrictInvestments;

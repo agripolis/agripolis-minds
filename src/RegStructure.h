@@ -26,6 +26,11 @@ private:
     /// pointer to globals
     RegGlobalsInfo* g;
 
+    //plot in red zone or not 
+    vector<int> inRedzones; 
+    void initRedzone();
+    void outputRedzone();
+
     vector<int> free_plots_of_type;
     vector<int> plots_of_type;
     vector<double> average_rent_of_type;
