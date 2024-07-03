@@ -1,13 +1,13 @@
 # Input parameters for surrogate model
 
 # savedmodel folder
-MODEL_DIR	=	model0818
+MODEL_DIR	=	model-redzone
 
 # input output dimensions
-DIM_IN 		=	83
-DIM_OUT		=	122
+DIM_IN 		=	129
+DIM_OUT		=	233
 
 # input output names
-INPUT_NAME	=	serving_default_model_16_input:0
+INPUT_NAME	=	serving_default_model_15_input:0
 OUTPUT_NAME	=	StatefulPartitionedCall:0
 

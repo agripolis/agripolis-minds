@@ -9,7 +9,7 @@ Teiler	10
 
 Use_surrogate_model	true
 RedZone	true
-RedZone_fraction	0.15
+RedZone_fraction	0.25
 
 ManagerCoeffDistribution	Normal
 ManagerDemographics	false
