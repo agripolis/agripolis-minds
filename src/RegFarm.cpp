@@ -179,6 +179,9 @@ RegFarmInfo::RegFarmInfo(RegRegionInfo* reg,
     int farmerwerbsform)
     :region(reg), g(G), invest_cat(&ICat), product_cat(&PCat) {
 
+    arable_redzone = 0;
+    arable_nonRedzone = 0;
+
     use_surrogate = false;
     restrict_invest = false;
     allow_invest = false;
@@ -2236,7 +2239,34 @@ RegFarmInfo::setRentedPlot(RegPlotInfo* p, double rent, double tacs) {
         p->setNewleyRented(true);
         rented_land_of_type[type]+=g->PLOT_SIZE;
     }
+
+    if (g->RedZone) {
+        incRedzone(p,true);
+    }
 }
+
+void
+RegFarmInfo::incRedzone(RegPlotInfo* p, bool updateLinks=false) {
+    auto reds = region->getInRedzones();
+    auto gCOLS = g->NO_COLS;
+    auto gROWS = g->NO_ROWS;
+
+    int x, y, loc;
+    if (p->getSoilName().compare("Arable_Land") == 0) {
+        x = p->getCol();
+        y = p->getRow();
+        loc = x * gCOLS + y;
+        if (reds[loc])
+            arable_redzone +=  g->PLOT_SIZE;
+        //else
+        //    arable_nonRedzone += g->PLOT_SIZE;
+        arable_nonRedzone = land_input_of_type[0] - arable_redzone;
+    }
+    if (updateLinks) {
+        lpSurrogate->updateReferences();
+    }
+}
+
 void
 RegFarmInfo::setSecondPrice(vector<double>& secondprice_region) {
     list<RegPlotInfo* >::iterator plot_iter;
@@ -2361,6 +2391,10 @@ RegFarmInfo::decDirectPayment(double payment) {
 void
 RegFarmInfo::increaseLandCapacityOfType(int type,int no_of_plots) {
     land_input_of_type[type]+=no_of_plots*g->PLOT_SIZE;
+    if (g->RedZone) {
+        if (type==0) 
+            updateArable_nonRedzone();
+    }
     if (use_surrogate) 
       lpSurrogate->updateLand();
      else 
@@ -2369,6 +2403,10 @@ RegFarmInfo::increaseLandCapacityOfType(int type,int no_of_plots) {
 void
 RegFarmInfo::decreaseLandCapacityOfType(int type,int no_of_plots) {
     land_input_of_type[type]-=no_of_plots*g->PLOT_SIZE;
+    if (g->RedZone) {
+        if (type==0)
+            updateArable_nonRedzone();
+    }
     if (use_surrogate) 
       lpSurrogate->updateLand();
     else
@@ -3061,3 +3099,24 @@ double RegFarmInfo::getVarCostsOfProduct(int i) const {
 
 }
 
+double RegFarmInfo::getArable_Redzone() {
+    return arable_redzone;
+}
+
+double RegFarmInfo::getArable_nonRedzone() {
+    // Arable_Land
+    return arable_nonRedzone;
+}
+
+void RegFarmInfo::updateArable_nonRedzone() {
+    // Arable_Land
+    arable_nonRedzone =  land_input_of_type[0] - arable_redzone;
+}
+
+void RegFarmInfo::calcArable_Redzone() {
+    arable_redzone = 0;
+    arable_nonRedzone = 0;
+    for (auto p : PlotList) {
+        incRedzone(p);
+    }
+}

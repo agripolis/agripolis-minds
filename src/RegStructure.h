@@ -45,6 +45,8 @@ private:
     double var_tacs;
     double fix_tacs;
 public:
+    vector<int> getInRedzones();
+
 	int getRandom_contractLength();
 	int getRandom_freePlot_initLand();
 	int getRandom_freePlot_rentPlot();

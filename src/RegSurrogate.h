@@ -77,7 +77,8 @@ protected:
     const vector<string> reftypes = { "MANAGEMENT", "LIQUIDITY", "LAND", "LABOUR", "FINANCIALRULE", "INCOMEPAY",
         "UNMODINCOMEPAY", "TRANCH1WIDTH", "TRANCH2WIDTH",  "TRANCH3WIDTH", "TRANCH4WIDTH",
         "TRANCH5WIDTH", "TRANCH1DEG", "TRANCH2DEG", "TRANCH3DEG", "TRANCH4DEG",
-        "TRANCH5DEG", "LABOUR_SUBSTITUTION", "FAMILYLABOUR", "HIREDLABOUR", "EC_INTEREST"};
+        "TRANCH5DEG", "LABOUR_SUBSTITUTION", "FAMILYLABOUR", "HIREDLABOUR", "EC_INTEREST",
+        "ARABLENORMAL", "ARABLEREDZONE"};
     map <string, int> refnumber;
     vector<double*> refsources;
     vector<RegLinkNumberObject*> number_links;
@@ -123,6 +124,7 @@ public:
     void initLinks(RegFarmInfo*,RegInvestList*,RegProductList*,RegLabourInfo*);
     /// to update only the land links
     void updateLand();
+    void updateReferences();
 
 	///update yield --soil service
 	void updateYield();

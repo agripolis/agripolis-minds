@@ -985,6 +985,7 @@ RegManagerInfo::initPopulations() {
                 newFarm->setInitialRentOfType(initial_rent[k][i],k);
             }
 
+            
 	     	newFarm->setFarmStead();
 
             newFarm->setInitialFamLu(family_labour[i]+off_farm_labour[i]);
@@ -1046,6 +1047,12 @@ RegManagerInfo::initPopulations() {
                 farms_iter++) {
             if (!(*farms_iter)->allokateInitialLand())
                 ready = false;
+        }
+    }
+
+    if (g->RedZone) {
+        for (auto farms_iter : FarmList) {
+            farms_iter->calcArable_Redzone();
         }
     }
 
@@ -1374,6 +1381,13 @@ void RegManagerInfo::calcMaxRents() {
 void
 RegManagerInfo::LandAllocation() {
 	g->tPhase = SimPhase::LAND;
+    if (g->RedZone) {
+        for (auto farms_iter = FarmList.begin();
+            farms_iter != FarmList.end();
+            farms_iter++) {
+            (*farms_iter)->calcArable_Redzone();
+        }
+    }
 	//cout << "vor landallocation: " << Region->free_plots.size() << endl;
 //        if (iteration==0) {
 //          printShadowPrices(100);   }
@@ -1528,7 +1542,8 @@ RegManagerInfo::LandAllocation() {
          Region->setTacs();
         }
     }
-	//cout << "after Landallocation: " << Region->free_plots.size() << endl;
+
+  	//cout << "after Landallocation: " << Region->free_plots.size() << endl;
 	g->tPhase = SimPhase::BETWEEN;
 }
 

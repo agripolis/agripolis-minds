@@ -223,6 +223,10 @@ static void corrXY(int rows, int cols, int& x, int& y) {
         y += rows;
 }
 
+vector<int> RegRegionInfo::getInRedzones() {
+    return inRedzones;
+}
+
 void RegRegionInfo::initRedzone() {
     int rows = g->NO_ROWS;
     int cols = g->NO_COLS;

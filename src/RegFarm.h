@@ -40,6 +40,10 @@ class RegProductInfo;
 class RegFarmInfo {
     friend class RegSurrogate;
 protected:
+    //redzone
+    double arable_redzone = 0;
+    double arable_nonRedzone = 0;
+
     vector<double> surrogate_extra_outs;
     vector<double> surrogate_extra_outs_old;
     bool use_surrogate;
@@ -308,6 +312,13 @@ protected:
     bool flat_copy;
 
 public:
+    double getArable_Redzone();
+    double getArable_nonRedzone();
+    void calcArable_Redzone();
+    void updateArable_nonRedzone();
+    //bool true for updating reference links including redzone area
+    void incRedzone(RegPlotInfo*, bool);
+
     bool getUseSurrogate()const;
     vector<double> getSurrogateExtraOuts() const;
     void saveExtraOuts();

@@ -1275,6 +1275,8 @@ static void adjustNumbertype(onelink& x) {
             is >> d;
             cl.factor= d;
         }
+
+        //TODO redzone adjust both nny and nnp
         if (!cl.valuetype.compare("nnY"))
             adjustNumbertype(cl);
    return;

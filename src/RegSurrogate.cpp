@@ -145,7 +145,7 @@ void RegSurrogate::debugCSV(vector<float> inps, string filename, bool before = t
         }
         out.close();
     }
-}
+} 
 
 static void mkIDs() {
     int msz = marketdata.products.size();
@@ -207,6 +207,14 @@ RegSurrogate::updateLand() {
     // land_links is pointer to object of type RegLinkObject
     for (unsigned i=0;i < land_links.size();i++)
         land_links[i]->trigger();
+    
+    updateReferences();
+}
+
+void
+RegSurrogate::updateReferences() {
+    for (unsigned i = 0; i < reference_links.size(); i++)
+        reference_links[i]->trigger();
 }
 
 void
@@ -260,7 +268,7 @@ double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vect
     }
     adjustInputs(inp);
 
-    //*/
+    //*/ 
     vector<float> outp;
     //outp.resize(g->SurrogateParas.dim_out);
 
@@ -277,7 +285,7 @@ double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vect
     
     /*
     outp = x;
-    std::cout << outp.size() << std::endl;
+    std::cout << outp.size() << std::endl; 
 
     std::cout << setprecision(8);
     std::cout << std::defaultfloat << std::endl;
@@ -286,7 +294,7 @@ double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vect
     for (int i = 0;i < g->SurrogateParas.dim_out;++i) {
         std::cout << std::setw(20) << outp[i];
         //++cnt;
-        //if (cnt % 6 == 0) std::cout << std::endl;
+        //if (cnt % 6 == 0) std::cout << std::endl; 
         //else std::cout << "\t";
     }
     //*/
@@ -620,13 +628,15 @@ RegSurrogate::initLinks(RegFarmInfo*f,
     //  "Management_Coeff", "LIQUIDITY", "LAND", "LABOUR", "FINANCIALRULE", "INCOMEPAY",
     //  "UNMODINCOMEPAY", "TRANCH1WIDTH", "TRANCH2WIDTH", "TRANCH3WIDTH", "TRANCH4WIDTH",
     //  "TRANCH5WIDTH", "TRANCH1DEG", "TRANCH2DEG", "TRANCH3DEG", "TRANCH4DEG", 
-    //  "TRANCH5DEG", "LABOUR_SUBSTITUTION", "FAMILYLABOUR", "HIREDLABOUR",  "EC_INTEREST"
+    //  "TRANCH5DEG", "LABOUR_SUBSTITUTION", "FAMILYLABOUR", "HIREDLABOUR",  "EC_INTEREST",
+    // "ARABLENORMAL", "ARABLEREDZONE"
     
     refsources = { &(f->management_coefficient), &(f->liquidity), &(f->land_input), &lab->labour_capacity, &(f->financing_rule), &(f->modulated_income_payment),
                   &(f->income_payment_farm), &(g->TRANCH_1_WIDTH), &(g->TRANCH_2_WIDTH), &(g->TRANCH_3_WIDTH), &(g->TRANCH_4_WIDTH),
                   &(g->TRANCH_5_WIDTH), &(g->TRANCH_1_DEG), &(g->TRANCH_2_DEG), &(g->TRANCH_3_DEG), &(g->TRANCH_4_DEG),
                   &(g->TRANCH_5_DEG), &il->labSubstitution, &lab->family_labour, &lab->fix_onfarm_labour, 
-                   &(g->EQ_INTEREST)};
+                  &(g->EQ_INTEREST), &(f->arable_redzone), &(f->arable_nonRedzone)};
+
     for (unsigned i=0;i<reference_links.size();i++) {
         double* source;
         int num = reference_links[i]->getSourceNumber();
