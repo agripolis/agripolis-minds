@@ -1216,10 +1216,24 @@ void  readmatrix_new() {
 }
 
 #include <regex>
-static void adjustNumbertype(onelink& x) {
+static void adjustPriceNumbertype(onelink& x) {
     string oname = x.numbertype;
-    string name = regex_replace(oname, regex("Yield"), "Price");
+    string name = regex_replace(oname, regex("Price"), "_Default");
     x.numbertype = name;
+}
+
+static void adjustYieldNumbertype(onelink& x) {
+    string oname = x.numbertype;
+    string nname;
+    if (oname.find("Yield")!=std::string::npos) {
+        nname = regex_replace(oname, regex("Yield"), "_Default");
+    }
+    else if (oname.find("_yield_")!=std::string::npos) {
+        nname = regex_replace(oname, regex("yield"), "Default");
+        if (nname.back()=='_')
+            nname.erase(nname.size()-1, 1);
+    }
+    x.numbertype = nname;
 }
 
 //static
@@ -1277,8 +1291,10 @@ static void adjustNumbertype(onelink& x) {
         }
 
         //TODO redzone adjust both nny and nnp
+        if (!cl.valuetype.compare("nnP"))
+            adjustPriceNumbertype(cl);
         if (!cl.valuetype.compare("nnY"))
-            adjustNumbertype(cl);
+            adjustYieldNumbertype(cl);
    return;
 }
 
