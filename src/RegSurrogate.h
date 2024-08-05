@@ -55,6 +55,8 @@ protected:
 	RegFarmInfo* farm;
 	
     //inputs for surrogate model
+    void adjustInputs(vector<float>&);
+    vector<tuple<string,double,double>> inputsMinMax;
     vector<double> inputs;
 
     bool flat_copy;

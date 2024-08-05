@@ -163,6 +163,7 @@ double RegSurrogate::getValOfIndex(int id) {
 
 void RegSurrogate::setupSurrogate(RegGlobalsInfo* g){
     this->g = g;
+    inputsMinMax = surrogateIO.inMinMax;
     inputs.resize(surrogateIO.inputlinks.size(),0);
     int s = reftypes.size();
     for (int i = 0; i < s; ++i) {
@@ -228,11 +229,32 @@ void RegSurrogate::updatePaymentEntitlement() {
         incomepay_links[i]->trigger();
 }
 
-static void adjustInputs(vector<float>& inps) {
+void RegSurrogate::adjustInputs(vector<float>& inps) {
+    //with inputsMinMax
+    auto sz = inps.size();
+    string name;
+    float mi, ma;
+    float v;
+    for (auto i = 0; i < sz; ++i) {
+        name = get<0>(inputsMinMax[i]);
+        mi = get<1>(inputsMinMax[i]);
+        ma = get<2>(inputsMinMax[i]);
+        v = inps[i];
+        if (v > ma * (1 + 0.001)) {
+            cout << "WARNING "<<"("<< v << ">" << ma<< "): #" << name << " is larger than training maximum !, corrected to max \n";
+            inps[i] = ma;
+        }else if (v<mi*(1-0.001)) {
+            //cout << "WARNING " << "(" << v << "<" << mi << "): #" << name << " is smaller than training minimum !, corrected to min \n";
+            inps[i] = mi;
+        }
+    }
+
+    /*
     if (inps[3]>2)  //chiselPlough
         inps[3]=2;
     if (inps[79] < 15.02)   //nArabLand
         inps[79] = 15.02;
+    */
 }
 
 double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vector<double>& extras, int maxofffarmlu) {
@@ -283,7 +305,7 @@ double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vect
         x[61] /= inp[82];
     }
     
-    /*
+     /*
     outp = x;
     std::cout << outp.size() << std::endl; 
 
@@ -564,6 +586,7 @@ RegSurrogate* RegSurrogate::clone(RegGlobalsInfo* G) {
     (*n).g=G;
     (*n).refnumber = refnumber;
     (*n).inputs.resize(inputs.size());
+    (*n).inputsMinMax = inputsMinMax;
 
     for (unsigned i=0;i<invest_links.size();i++) {
         RegLinkInvestObject *link=new RegLinkInvestObject(*invest_links[i]);

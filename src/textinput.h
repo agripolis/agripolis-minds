@@ -160,6 +160,7 @@ struct onelink {
 struct surrogateIO {
     vector<onelink> inputlinks;
     vector<string> output_names;
+    vector<tuple<string, double, double>> inMinMax;
 };
 
 extern struct surrogateIO surrogateIO;

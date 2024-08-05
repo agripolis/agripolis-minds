@@ -948,6 +948,48 @@ void readinvest() {
   return;
 }
 
+void readSurrogateInputMinMax() {
+    ifstream ins;
+    stringstream ss;
+    ss << inputdir << SURROGATE_DIR << SURROGATE_INPUT;
+    ins.open(ss.str().c_str(), ios::in);
+    if (!ins.is_open()) {
+        cerr << "Error while opening: " << ss.str() << "\n";
+        exit(2);
+    }
+
+    string s;
+    while (!ins.eof()) {
+        getline(ins, s);
+
+        vector <string> tokens;
+        tokenize(s, tokens, " =;\t");
+        if (tokens.size() == 1) continue;
+        if (tokens[0][0] == '#') continue;
+
+        istringstream is(s);
+
+        //Surrogate
+        tuple<string, double, double> atup;
+        string str1, name;
+        double d, d1,d2;
+
+        is >> str1;
+        name = str1;
+        is >> str1;
+        is >> str1;
+        is >> d;
+        is >> d1;
+        is >> d2;
+        
+        atup = { name,d1,d2 };
+        surrogateIO.inMinMax.push_back(atup);
+    }
+    ins.close();
+    return;
+}
+
+
 void readSurrogateInput() {
     ifstream ins;
     stringstream ss;
@@ -1047,6 +1089,7 @@ void readSurrogateModel() {
 void readSurrogate() {
     readSurrogateModel();
     readSurrogateInput();
+    readSurrogateInputMinMax();
     readSurrogateOutput();
     return;
 }
@@ -1290,7 +1333,7 @@ static void adjustYieldNumbertype(onelink& x) {
             cl.factor= d;
         }
 
-        //TODO redzone adjust both nny and nnp
+        //redzone adjust both nny and nnp
         if (!cl.valuetype.compare("nnP"))
             adjustPriceNumbertype(cl);
         if (!cl.valuetype.compare("nnY"))

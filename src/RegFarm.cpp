@@ -2511,10 +2511,12 @@ RegFarmInfo::calculateLiquidity() {
     //@    liquidity += add_st_capital;
     //@  }
 
+    /* 
     if (use_surrogate) {
         liquidity = max(liquidity, g->Liquidity_Low);
         liquidity = min(liquidity, g->Liquidity_High);
     }
+    */
 } 
 int
 RegFarmInfo::getFarmClassChange() const {
