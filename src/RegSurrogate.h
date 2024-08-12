@@ -56,6 +56,7 @@ protected:
 	
     //inputs for surrogate model
     void adjustInputs(vector<float>&);
+    void adjustOutputs(vector<float>&, const vector<float>&);
     vector<tuple<string,double,double>> inputsMinMax;
     vector<double> inputs;
 
@@ -123,6 +124,7 @@ public:
 
     void debug(string,bool);
     void debugCSV(vector<float>, string, bool);
+    void debugPredict(string, vector<float>, vector<float>);
     void initLinks(RegFarmInfo*,RegInvestList*,RegProductList*,RegLabourInfo*);
     /// to update only the land links
     void updateLand();

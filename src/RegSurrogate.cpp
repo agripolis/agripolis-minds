@@ -103,8 +103,8 @@ RegSurrogate::~RegSurrogate() {
     incomepay_links.clear();
     if (obj_backup) delete obj_backup;
 }
-void
-RegSurrogate::debug(string filename, bool before=false) {
+
+void RegSurrogate::debug(string filename, bool before=false) {
     ofstream out;
     out.open(filename.c_str(),ios::trunc);
     out << "Inputs: " << endl;
@@ -119,6 +119,24 @@ RegSurrogate::debug(string filename, bool before=false) {
     }
     out.close();
 }
+
+void RegSurrogate::debugPredict(string filename, vector<float> inp, vector<float> outp) {
+    ofstream out;
+    out.open((filename+"_in.csv").c_str(), ios::trunc);
+    //out << "Inputs: " << endl;
+    for (int i = 0; i < surrogateIO.inputlinks.size(); ++i) {
+        out << surrogateIO.inputlinks[i].name << ";" << inp[i] << endl;
+    }
+    out.close();
+
+    out.open((filename + "_out.csv").c_str(), ios::trunc);
+    //out << "Inputs: " << endl;
+    for (int i = 0; i < surrogateIO.output_names.size(); ++i) {
+            out << surrogateIO.output_names[i] << ";" << outp[i] << endl;
+    }
+    out.close();
+}
+
 static string remove_price_suffix(string str) {
     string res=str;
     unsigned int len=res.length();
@@ -240,10 +258,10 @@ void RegSurrogate::adjustInputs(vector<float>& inps) {
         mi = get<1>(inputsMinMax[i]);
         ma = get<2>(inputsMinMax[i]);
         v = inps[i];
-        if (v > ma * (1 + 0.001)) {
-            cout << "WARNING "<<"("<< v << ">" << ma<< "): #" << name << " is larger than training maximum !, corrected to max \n";
+        if (v > ma ) {
+            //cout << "WARNING "<<"("<< v << ">" << ma<< "): #" << name << " is larger than training maximum !, corrected to max \n";
             inps[i] = ma;
-        }else if (v<mi*(1-0.001)) {
+        }else if (v<mi) {
             //cout << "WARNING " << "(" << v << "<" << mi << "): #" << name << " is smaller than training minimum !, corrected to min \n";
             inps[i] = mi;
         }
@@ -255,6 +273,13 @@ void RegSurrogate::adjustInputs(vector<float>& inps) {
     if (inps[79] < 15.02)   //nArabLand
         inps[79] = 15.02;
     */
+}
+
+void RegSurrogate::adjustOutputs(vector<float>& x, const vector<float>& inp ) {
+    x[40] = x[48] = x[49] = 0;  //solidManDist, potaStore500t, bunkerSilo450
+    if (x[61] > 0) {   // EC_INTEREST
+        x[61] /= inp[128];
+    }
 }
 
 double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vector<double>& extras, int maxofffarmlu) {
@@ -300,12 +325,13 @@ double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vect
     //if (g->tPhase == SimPhase::INVEST)
        //debugCSV(inp, "Farm_" + to_string(g->tFarmId), false);
     
-    x[40] = x[48] = x[49] = 0;  //solidManDist, potaStore500t, bunkerSilo450
-    if (x[61] > 0) {   // EC_INTEREST
-        x[61] /= inp[82];
+    if (x[0] <= 0) {
+        debugPredict("Farm_"+to_string(g->tFarmId),inp, x);
+        cout << "GDB<=0" << endl; // exit(5);
     }
-    
-     /*
+
+    adjustOutputs(x, inp);
+   /*
     outp = x;
     std::cout << outp.size() << std::endl; 
 
