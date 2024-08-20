@@ -56,6 +56,7 @@ protected:
 	
     //inputs for surrogate model
     void adjustInputs(vector<float>&);
+    bool inputWarning = false;
     void adjustOutputs(vector<float>&, const vector<float>&);
     vector<tuple<string,double,double>> inputsMinMax;
     vector<double> inputs;

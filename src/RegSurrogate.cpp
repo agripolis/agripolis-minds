@@ -259,11 +259,13 @@ void RegSurrogate::adjustInputs(vector<float>& inps) {
         ma = get<2>(inputsMinMax[i]);
         v = inps[i];
         if (v > ma ) {
-            //cout << "WARNING "<<"("<< v << ">" << ma<< "): #" << name << " is larger than training maximum !, corrected to max \n";
+            cout << "WARNING "<<"("<< v << ">" << ma<< "): #" << name << " is larger than training maximum !, changed to max \n";
             inps[i] = ma;
+            inputWarning = true;
         }else if (v<mi) {
-            //cout << "WARNING " << "(" << v << "<" << mi << "): #" << name << " is smaller than training minimum !, corrected to min \n";
+            //cout << "WARNING " << "(" << v << "<" << mi << "): #" << name << " is smaller than training minimum !, changed to min \n";
             inps[i] = mi;
+            inputWarning = true;
         }
     }
 
@@ -325,10 +327,15 @@ double RegSurrogate::LpSurrogate(RegProductList* PList, vector<int >& ninv, vect
     //if (g->tPhase == SimPhase::INVEST)
        //debugCSV(inp, "Farm_" + to_string(g->tFarmId), false);
     
-    if (x[0] <= 0) {
+
+    if (inputWarning)
+        debugPredict("Farm_" + to_string(g->tFarmId), inp, x);
+
+    /*if (x[0] <= 0) {
         debugPredict("Farm_"+to_string(g->tFarmId),inp, x);
         cout << "GDB<=0" << endl; // exit(5);
     }
+    //*/
 
     adjustOutputs(x, inp);
    /*
@@ -684,7 +691,7 @@ RegSurrogate::initLinks(RegFarmInfo*f,
                   &(f->income_payment_farm), &(g->TRANCH_1_WIDTH), &(g->TRANCH_2_WIDTH), &(g->TRANCH_3_WIDTH), &(g->TRANCH_4_WIDTH),
                   &(g->TRANCH_5_WIDTH), &(g->TRANCH_1_DEG), &(g->TRANCH_2_DEG), &(g->TRANCH_3_DEG), &(g->TRANCH_4_DEG),
                   &(g->TRANCH_5_DEG), &il->labSubstitution, &lab->family_labour, &lab->fix_onfarm_labour, 
-                  &(g->EQ_INTEREST), &(f->arable_redzone), &(f->arable_nonRedzone)};
+                  &(g->EQ_INTEREST), &(f->arable_nonRedzone), &(f->arable_redzone)};
 
     for (unsigned i=0;i<reference_links.size();i++) {
         double* source;

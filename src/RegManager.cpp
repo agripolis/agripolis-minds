@@ -1050,17 +1050,18 @@ RegManagerInfo::initPopulations() {
         }
     }
 
-    if (g->RedZone) {
-        for (auto farms_iter : FarmList) {
-            farms_iter->calcArable_Redzone();
-        }
-    }
-
     // finish up setup of region (create black plots)
     Region->finish();
     Region->initPlotSearch();
     g->INITIALISATION=false;
  
+    if (g->RedZone) {
+        for (auto farms_iter : FarmList) {
+            farms_iter->calcArable_Redzone();
+            farms_iter->lpSurrogate->updateInputValues();
+        }
+    }
+
 	//init carbon
 	if (g->HAS_SOILSERVICE) {
 	   for (farms_iter = FarmList.begin();
