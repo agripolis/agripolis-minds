@@ -400,7 +400,7 @@ void RegGlobalsInfo::initDemograph() {
 
 void
 RegGlobalsInfo::initGlobalsRead() {
-	Use_Surrogate_Percent = atoi(globdata.globs["SURROGATE_PERCENT"].c_str());
+	//Use_Surrogate_Percent = atoi(globdata.globs["SURROGATE_PERCENT"].c_str());
 	
 	//RestrictInvestments = globdata.globs["RESTRICTINVESTMENTS"].compare("true") == 0 ? true : false;
 	Livestock_Inv_farmsPercent = atof(globdata.globs["LIVESTOCK_INV_FARMSPERCENT"].c_str());

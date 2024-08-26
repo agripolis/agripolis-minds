@@ -16,8 +16,6 @@ ManagerDemographics	false
 AGE_DEPENDENT	true
 
 [Globals]
-surrogate_percent 	100
-
 ManagerDev		0.1
 
 NASG_start_period	4
