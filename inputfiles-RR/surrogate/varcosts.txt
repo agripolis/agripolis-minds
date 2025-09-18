@@ -10,4 +10,4 @@ Herb	1.00
 Fung	1.00
 Insect	1.00
 growthContr	1.00
-HailIns	9.91
+hailIns	9.91
