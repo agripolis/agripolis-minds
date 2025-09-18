@@ -1108,7 +1108,7 @@ void readSurrogateVarcosts() {
         if (tokens[1] == "=")
             continue;
         else
-            surrogateIO.varcosts[tokens[0]]=atof(tokens[1].c_str()); 
+            gg->Surrogate_Varcosts[tokens[0]]=atof(tokens[1].c_str()); 
     }
     ins.close();
     return;

@@ -162,8 +162,7 @@ struct surrogateIO {
     vector<onelink> inputlinks;
     vector<string> output_names;
     vector<tuple<string, double, double>> inMinMax;
-    map<string, double> varcosts;
-};
+ };
 
 extern struct surrogateIO surrogateIO;
 

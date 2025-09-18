@@ -1288,7 +1288,7 @@ RegFarmInfo::periodResults(int period) {
     // PROFIT
     bonus = 0;
     gm_products = FarmProductList->getGrossMarginOfType(g->PRODTYPE);
-	if (g->YoungFarmer)
+    if (g->YoungFarmer)
 		gm_products += getYoungFarmerPay();
 	
     total_maintenance =  FarmInvestList->getTotalMaintenance();
