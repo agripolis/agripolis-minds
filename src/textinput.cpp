@@ -1086,11 +1086,40 @@ void readSurrogateModel() {
     return;
 }
 
+void readSurrogateVarcosts() {
+    ifstream ins;
+    stringstream ss;
+    ss << inputdir << SURROGATE_DIR << SURROGATE_VARCOST;
+    ins.open(ss.str().c_str(), ios::in);
+    if (!ins.is_open()) {
+        cerr << "Error while opening: " << ss.str() << "\n";
+        exit(2);
+    }
+
+    string s;
+    while (!ins.eof()) {
+        getline(ins, s);
+
+        vector <string> tokens;
+        tokenize(s, tokens, " =;\t");
+        if (tokens.size() == 1) continue;
+        if (tokens[0][0] == '#') continue;
+
+        if (tokens[1] == "=")
+            continue;
+        else
+            surrogateIO.varcosts[tokens[0]]=atof(tokens[1].c_str()); 
+    }
+    ins.close();
+    return;
+}
+
 void readSurrogate() {
     readSurrogateModel();
     readSurrogateInput();
     readSurrogateInputMinMax();
     readSurrogateOutput();
+    readSurrogateVarcosts();
     return;
 }
 

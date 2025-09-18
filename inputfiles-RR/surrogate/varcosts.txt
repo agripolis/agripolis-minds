@@ -1,0 +1,13 @@
+# Input price (Euro per l/kg)	Price
+Diesel	0.70
+AHL	0.24
+PK_18_10	0.24
+	
+# Input costs (Euro per ha)	
+seed	1.00
+Lime	1.00
+Herb	1.00
+Fung	1.00
+Insect	1.00
+growthContr	1.00
+HailIns	9.91

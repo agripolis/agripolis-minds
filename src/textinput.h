@@ -29,6 +29,7 @@ const string  SURROGATE_DIR = "surrogate\\";
 const string  SURROGATE_MODEL = "model.txt";
 const string  SURROGATE_INPUT = "in_variables.txt";
 const string  SURROGATE_OUTPUT = "out_variables.txt";
+const string  SURROGATE_VARCOST = "varcosts.txt";
 
 const string  DEMOGRAPH_FILE = "demographics.txt";
 const string  YOUNGFARMER_FILE = "youngfarmer.txt";
@@ -161,6 +162,7 @@ struct surrogateIO {
     vector<onelink> inputlinks;
     vector<string> output_names;
     vector<tuple<string, double, double>> inMinMax;
+    map<string, double> varcosts;
 };
 
 extern struct surrogateIO surrogateIO;
