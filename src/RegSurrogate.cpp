@@ -189,10 +189,15 @@ void RegSurrogate::setupSurrogate(RegGlobalsInfo* g){
     }
     mkIDs();
     int sz = surrogateIO.output_names.size();
+    int eni = 0;
+    string aname;
     for (int i = 0; i < sz; ++i) {
         pair<objtype, int> res = result_type(surrogateIO.output_names[i]);
         switch (res.first) {
-        case UNKNOWN: g->Surrogate_Extra_outnames.push_back(surrogateIO.output_names[i]);
+        case UNKNOWN: 
+            aname = surrogateIO.output_names[i];
+            g->Surrogate_Extra_outnames.push_back(aname); 
+            g->Surrogate_Extra_NameIndex[aname] = eni++;
             break;
         default:;
         }

@@ -48,6 +48,7 @@ public:
     int Use_Surrogate_Percent;
     SurrogatePara SurrogateParas;
     vector<string> Surrogate_Extra_outnames;
+    map<string, int> Surrogate_Extra_NameIndex;
     map<string, double> Surrogate_Varcosts;
 
     //RedZone

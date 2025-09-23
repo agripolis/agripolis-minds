@@ -50,6 +50,8 @@ protected:
     
     void initLinks(RegSurrogate*);
     void initLinks(RegLpInfo*);
+    
+    double calcSurrogateVarcosts();
 
 	void changeGeneration();
 
