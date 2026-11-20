@@ -1,0 +1,3 @@
+# FarmLin_202511051213  (tag: serve, signature: serving_default)
+input: serving_default_model_input:0    # key=model_input shape=[-1, 129]
+output: StatefulPartitionedCall:0    # key=output shape=[-1, 233]
