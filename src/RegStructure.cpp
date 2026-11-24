@@ -159,8 +159,10 @@ void RegRegionInfo::outputRedzone() {
     int cols = g->NO_COLS;
     int sz = inRedzones.size();
 
+    auto pstype = 0;
     for (auto i = 0; i < sz; i++) {
-        of<<i % cols <<"\t"<< i / cols<<"\t"<< inRedzones[i]<<"\n";
+        pstype = plots[i]->getSoilType();
+        of<<i % cols <<"\t"<< i / cols<<"\t"<< pstype+3*inRedzones[i]<<"\n";
     }
 }
 
@@ -312,7 +314,9 @@ RegRegionInfo::initialisation() {
     
     if (g->RedZone)
         initRedzone();
-    if (false)  //test
+
+    bool testred = false;
+    if (testred)  
         outputRedzone();
 }
 
